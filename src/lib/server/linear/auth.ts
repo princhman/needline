@@ -1,5 +1,6 @@
 import { env } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
+import { saveToken } from "../db/token";
 
 export const exchangeCodeForToken = async (code: string) => {
   const response = await fetch("https://api.linear.app/oauth/token", {
@@ -28,5 +29,18 @@ export const exchangeCodeForToken = async (code: string) => {
 };
 
 export const refreshLinearToken = async (refreshToken: string) => {
-  // refresh logic here
+  const response = await fetch("https://api.linear.app/oauth/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      refresh_token: refreshToken,
+      grant_type: "refresh_token",
+      client_secret: env.CLIENT_TOKEN,
+      client_id: publicEnv.PUBLIC_CLIENT_ID,
+    }),
+  });
+
+  return await response.json();
 };
