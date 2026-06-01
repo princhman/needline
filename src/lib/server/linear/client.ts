@@ -1,6 +1,7 @@
 import { LinearClient } from "@linear/sdk";
 import { getToken, saveToken } from "$lib/server/db/token";
 import { refreshLinearToken } from "./auth";
+import { GraphQLClient } from "graphql-request";
 
 export const getLinearClient = async () => {
   var token = getToken();
@@ -27,8 +28,10 @@ export const getLinearClient = async () => {
     token = new_token;
   }
 
-  return new LinearClient({
-    accessToken: token!.accessToken,
+  return new GraphQLClient("https://api.linear.app/graphql", {
+    headers: {
+      Authorization: `Bearer ${token!.accessToken}`,
+    },
   });
 };
 
@@ -39,10 +42,5 @@ export const isAuthenticated = async () => {
     return false;
   }
 
-  try {
-    await client.viewer;
-    return true;
-  } catch {
-    return false;
-  }
+  return true;
 };

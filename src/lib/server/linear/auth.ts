@@ -1,6 +1,5 @@
 import { env } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
-import { saveToken } from "../db/token";
 
 export const exchangeCodeForToken = async (code: string) => {
   const response = await fetch("https://api.linear.app/oauth/token", {
