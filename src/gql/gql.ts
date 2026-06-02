@@ -14,10 +14,16 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  query GetNeedlineIssues {\n    issues(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        identifier\n        title\n        url\n      }\n    }\n  }\n": typeof types.GetNeedlineIssuesDocument,
+    "\n  query Customers {\n    customers {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CustomersDocument,
+    "\n  query GetNeedlineIssues {\n    issues(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        identifier\n        title\n        url\n        team {\n          id\n        }\n        labels {\n          nodes {\n            name\n            id\n          }\n        }\n      }\n    }\n  }\n": typeof types.GetNeedlineIssuesDocument,
+    "\n  mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {\n    customerNeedCreate(input: $input) {\n      success\n    }\n  }\n": typeof types.CustomerNeedCreateDocument,
+    "\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n        url\n      }\n    }\n  }\n": typeof types.IssueCreateDocument,
 };
 const documents: Documents = {
-    "\n  query GetNeedlineIssues {\n    issues(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        identifier\n        title\n        url\n      }\n    }\n  }\n": types.GetNeedlineIssuesDocument,
+    "\n  query Customers {\n    customers {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n": types.CustomersDocument,
+    "\n  query GetNeedlineIssues {\n    issues(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        identifier\n        title\n        url\n        team {\n          id\n        }\n        labels {\n          nodes {\n            name\n            id\n          }\n        }\n      }\n    }\n  }\n": types.GetNeedlineIssuesDocument,
+    "\n  mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {\n    customerNeedCreate(input: $input) {\n      success\n    }\n  }\n": types.CustomerNeedCreateDocument,
+    "\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n        url\n      }\n    }\n  }\n": types.IssueCreateDocument,
 };
 
 /**
@@ -37,7 +43,19 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query GetNeedlineIssues {\n    issues(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        identifier\n        title\n        url\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetNeedlineIssues {\n    issues(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        identifier\n        title\n        url\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query Customers {\n    customers {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query Customers {\n    customers {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetNeedlineIssues {\n    issues(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        identifier\n        title\n        url\n        team {\n          id\n        }\n        labels {\n          nodes {\n            name\n            id\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetNeedlineIssues {\n    issues(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        identifier\n        title\n        url\n        team {\n          id\n        }\n        labels {\n          nodes {\n            name\n            id\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {\n    customerNeedCreate(input: $input) {\n      success\n    }\n  }\n"): (typeof documents)["\n  mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {\n    customerNeedCreate(input: $input) {\n      success\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n        url\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n        url\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

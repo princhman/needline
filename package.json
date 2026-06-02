@@ -39,6 +39,7 @@
     "@tanstack/svelte-query": "^6.1.33",
     "better-sqlite3": "^12.10.0",
     "drizzle-orm": "^0.45.2",
-    "graphql-request": "^7.4.0"
+    "graphql-request": "^7.4.0",
+    "valibot": "^1.4.1"
   }
 }

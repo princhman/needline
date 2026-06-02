@@ -10,6 +10,15 @@ const GetNeedlineIssuesQuery = graphql(`
         identifier
         title
         url
+        team {
+          id
+        }
+        labels {
+          nodes {
+            name
+            id
+          }
+        }
       }
     }
   }

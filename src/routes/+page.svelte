@@ -2,6 +2,8 @@
     import { env } from "$env/dynamic/public";
     import type { PageData } from "./$types";
     import { getIssues } from "$lib/linear/issues.remote";
+    import CreateNeed from "$lib/components/create-need.svelte";
+    import { getCustomers } from "$lib/linear/customers.remote";
 
     let { data }: { data: PageData } = $props();
 
@@ -41,15 +43,28 @@
 
 <h2>Issues</h2>
 <div>
-    {#if issues.loading}
-        <p>Loading...</p>
-    {:else if issues.current}
+    {#if issues.current}
         <ul>
             {#each issues.current as issue}
                 <li>{issue.title}</li>
             {/each}
         </ul>
+
+        {#if issues.loading}
+            <p>Refreshing...</p>
+        {/if}
+    {:else if issues.loading}
+        <p>Loading...</p>
+    {:else if issues.error}
+        <p>Failed to load issues</p>
     {/if}
 </div>
 
 <button onclick={() => issues.refresh()}>Refresh</button>
+
+<CreateNeed />
+
+{#each await getCustomers() as customer}
+    <p>{customer.name}</p>
+    <p>{customer.id}</p>
+{/each}

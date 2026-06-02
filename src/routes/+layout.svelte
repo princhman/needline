@@ -8,7 +8,9 @@
     const queryClient = new QueryClient();
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head
+    ><link rel="icon" href="/logo.svg" /><title>Needline</title></svelte:head
+>
 <QueryClientProvider client={queryClient}>
     {@render children()}
 </QueryClientProvider>
