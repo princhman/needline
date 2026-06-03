@@ -23,3 +23,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 src/lib/server/db/sqlite.db*
 src/lib/server/db/migrations/
+scripts/
+my_encryption_key.pem
+company_public.pem

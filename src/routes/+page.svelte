@@ -4,6 +4,7 @@
     import { getIssues } from "$lib/linear/issues.remote";
     import CreateNeed from "$lib/components/create-need.svelte";
     import { getCustomers } from "$lib/linear/customers.remote";
+    import UserAuthStatus from "$lib/components/user-auth-status.svelte";
 
     let { data }: { data: PageData } = $props();
 
@@ -68,3 +69,5 @@
     <p>{customer.name}</p>
     <p>{customer.id}</p>
 {/each}
+
+<UserAuthStatus />
