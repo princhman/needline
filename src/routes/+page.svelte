@@ -3,7 +3,6 @@
     import type { PageData } from "./$types";
     import { getIssues } from "$lib/linear/issues.remote";
     import CreateNeed from "$lib/components/create-need.svelte";
-    import { getCustomers } from "$lib/linear/customers.remote";
     import UserAuthStatus from "$lib/components/user-auth-status.svelte";
 
     let { data }: { data: PageData } = $props();
@@ -12,24 +11,12 @@
         client_id: env.PUBLIC_CLIENT_ID!,
         redirect_uri: env.PUBLIC_REDIRECT_URI,
         response_type: "code",
-        scope: "read,write",
+        scope: "read,write,customer:read,customer:write",
         state: crypto.randomUUID(),
+        actor: "app",
     });
 
     const url = `https://linear.app/oauth/authorize?${params.toString()}`;
-
-    function formatLastRefreshed(date: Date) {
-        const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-
-        if (seconds < 5) return "just now";
-        if (seconds < 60) return `${seconds}s ago`;
-
-        const minutes = Math.floor(seconds / 60);
-        if (minutes < 60) return `${minutes}m ago`;
-
-        const hours = Math.floor(minutes / 60);
-        return `${hours}h ago`;
-    }
 
     const issues = getIssues();
 </script>
@@ -64,10 +51,5 @@
 <button onclick={() => issues.refresh()}>Refresh</button>
 
 <CreateNeed />
-
-{#each await getCustomers() as customer}
-    <p>{customer.name}</p>
-    <p>{customer.id}</p>
-{/each}
 
 <UserAuthStatus />

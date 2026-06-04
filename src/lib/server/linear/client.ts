@@ -25,7 +25,7 @@ export const getLinearClient = async () => {
       new_token.refresh_token,
       new_token.expires_in,
     );
-    token = new_token;
+    token = getToken();
   }
 
   return new GraphQLClient("https://api.linear.app/graphql", {

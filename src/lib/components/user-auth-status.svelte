@@ -14,6 +14,9 @@
         <p>You are not authenticated</p>
         <a href={result?.login_url}>Login with company</a>
     {:else}
-        <p>You are authenticated as {result.user.name}</p>
+        <p>
+            You are authenticated as {result.user.name}, {result.user.email}, {result
+                .user.company}
+        </p>
     {/if}
 {/if}

@@ -1,4 +1,6 @@
+import { getRequestEvent } from "$app/server";
 import { env } from "$env/dynamic/private";
+import { decryptUserCookie } from "$lib/utils/cookies";
 import { publicDecrypt, constants } from "node:crypto";
 
 export type User = {
@@ -21,4 +23,10 @@ export const verifyUser = (value: string) => {
   } catch {
     return null;
   }
+};
+
+export const getUserFromSession = () => {
+  const { cookies } = getRequestEvent();
+  const encryptedUser = cookies.get("user") ?? "";
+  return decryptUserCookie(encryptedUser);
 };

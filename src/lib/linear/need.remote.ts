@@ -3,6 +3,8 @@ import * as v from "valibot";
 import { graphql } from "../../gql";
 import { getLinearClient } from "$lib/server/linear/client";
 import { env } from "$env/dynamic/private";
+import { getUserFromSession } from "$lib/server/company/auth";
+import { getCustomer } from "$lib/server/linear/customers";
 
 const CreateNeedQuery = graphql(`
   mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {
@@ -34,8 +36,9 @@ export const createNeed = form(
   }),
   async ({ what, why, isUrgent }) => {
     const client = await getLinearClient();
+    const user = getUserFromSession();
 
-    if (!client) {
+    if (!client || !user) {
       return null;
     }
 
@@ -51,11 +54,23 @@ export const createNeed = form(
       return;
     }
 
+    const customer = await getCustomer(user.company);
+    const body = [
+      `${what}`,
+      `${why}`,
+      customer == null ? `**Company:** ${user.company}` : null,
+      `**Email:** ${user.email}`,
+      "_Submitted via Needline._",
+    ]
+      .filter(Boolean)
+      .join("\n\n"); // only if customer doesn't exist add company name
+
     const need = await client.request(CreateNeedQuery, {
       input: {
         issueId: issue.issueCreate.issue!.id,
-        customerId: env.CUSTOMER_ID,
-        body: what + " .That is because : " + why,
+        createAsUser: user.name,
+        customerId: customer?.id,
+        body: body,
         priority: isUrgent ? 1.0 : 0.0,
       },
     });
