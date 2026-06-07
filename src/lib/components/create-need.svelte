@@ -1,55 +1,84 @@
 <script lang="ts">
     import { createNeed } from "$lib/linear/need.remote";
+    import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+    import * as Dialog from "$lib/components/ui/dialog/index.js";
+    import Input from "./ui/input/input.svelte";
+    import Checkbox from "./ui/checkbox/checkbox.svelte";
+    import Label from "./ui/label/label.svelte";
+    import { getIssues } from "$lib/linear/issues.remote";
+
+    const isUrgentField = createNeed.fields.isUrgent.as("checkbox");
+    let open = $state(false);
+
+    const issues = getIssues();
 </script>
 
-<form
-    {...createNeed.enhance(async (form) => {
-        if (await form.submit()) {
-            form.element.reset();
-        }
-    })}
->
-    <span>New request form:</span>
+<Dialog.Root bind:open>
+    <Dialog.Trigger
+        type="button"
+        class={buttonVariants({ variant: "outline" })}
+    >
+        Request
+    </Dialog.Trigger>
+    <Dialog.Content class="sm:max-w-106.25">
+        <form
+            {...createNeed.enhance(async (form) => {
+                const ok = await form.submit().updates();
 
-    <div class="flex flex-col gap-2">
-        <div class="flex items-center gap-2">
-            <label for="what">What?</label>
-            <input
-                {...createNeed.fields.what.as("text")}
-                id="what"
-                class="border border-gray-700 rounded-sm px-2"
-            />
-        </div>
-
-        <div class="flex items-center gap-2">
-            <label for="why">Why?</label>
-            <input
-                {...createNeed.fields.why.as("text")}
-                id="why"
-                class="border border-gray-700 rounded-sm px-2"
-            />
-        </div>
-
-        <div class="flex items-center gap-2">
-            <label for="urgency">Urgent?</label>
-            <input
-                {...createNeed.fields.isUrgent.as("checkbox")}
-                id="urgency"
-            />
-        </div>
-    </div>
-
-    {#each createNeed.fields.allIssues() as issue}
-        <p class="text-red-600">{issue.message}</p>
-    {/each}
-
-    {#if createNeed.pending}
-        <p>Creating...</p>
-    {/if}
-
-    {#if createNeed.result}
-        <p>Created {createNeed.result?.customerNeedCreate.success}</p>
-    {/if}
-
-    <button type="submit" disabled={createNeed.pending != 0}>Submit</button>
-</form>
+                if (ok && createNeed.result) {
+                    issues.set([createNeed.result, ...(issues.current ?? [])]);
+                }
+                form.element.reset();
+                open = false;
+            })}
+        >
+            <Dialog.Header>
+                <Dialog.Title>Create new Need</Dialog.Title>
+                <Dialog.Description
+                    >Describe what you need and why you need it</Dialog.Description
+                >
+            </Dialog.Header>
+            <div class="grid gap-4">
+                <div class="grid gap-3">
+                    <Label for="what">What?</Label>
+                    <Input
+                        {...createNeed.fields.what.as("text")}
+                        id="what"
+                        name="what"
+                        placeholder="What do you need?"
+                    />
+                </div>
+                <div class="grid gap-3">
+                    <Label for="why">Why?</Label>
+                    <Input
+                        {...createNeed.fields.why.as("text")}
+                        id="why"
+                        name="why"
+                        placeholder="Why is it important?"
+                    />
+                </div>
+                <div class="flex items-center gap-3">
+                    <Checkbox
+                        name={isUrgentField.name}
+                        value={isUrgentField.value}
+                        checked={isUrgentField.checked}
+                        aria-invalid={isUrgentField["aria-invalid"]}
+                        id="urgency"
+                    />
+                    <Label for="urgency">Urgent</Label>
+                </div>
+            </div>
+            <Dialog.Footer>
+                <Dialog.Close
+                    type="button"
+                    class={buttonVariants({ variant: "outline" })}
+                >
+                    Cancel
+                </Dialog.Close>
+                <Button type="submit" disabled={createNeed.pending > 0}
+                    >{#if createNeed.pending}Creating...{:else}Create{/if}</Button
+                >
+            </Dialog.Footer>
+        </form>
+    </Dialog.Content>
+</Dialog.Root>

@@ -4,6 +4,7 @@
     import { getIssues } from "$lib/linear/issues.remote";
     import CreateNeed from "$lib/components/create-need.svelte";
     import UserAuthStatus from "$lib/components/user-auth-status.svelte";
+    import Board from "$lib/components/board.svelte";
 
     let { data }: { data: PageData } = $props();
 
@@ -17,39 +18,11 @@
     });
 
     const url = `https://linear.app/oauth/authorize?${params.toString()}`;
-
-    const issues = getIssues();
 </script>
 
-<a href={url}>Authorize</a>
-
 {#if data.authenticated}
-    <p>Connected to Linear</p>
+    <Board />
 {:else}
     <p>Not connected to Linear</p>
+    <a href={url}>Authorize</a>
 {/if}
-
-<h2>Issues</h2>
-<div>
-    {#if issues.current}
-        <ul>
-            {#each issues.current as issue}
-                <li>{issue.title}</li>
-            {/each}
-        </ul>
-
-        {#if issues.loading}
-            <p>Refreshing...</p>
-        {/if}
-    {:else if issues.loading}
-        <p>Loading...</p>
-    {:else if issues.error}
-        <p>Failed to load issues</p>
-    {/if}
-</div>
-
-<button onclick={() => issues.refresh()}>Refresh</button>
-
-<CreateNeed />
-
-<UserAuthStatus />

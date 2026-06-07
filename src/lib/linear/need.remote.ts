@@ -5,6 +5,7 @@ import { getLinearClient } from "$lib/server/linear/client";
 import { env } from "$env/dynamic/private";
 import { getUserFromSession } from "$lib/server/company/auth";
 import { getCustomer } from "$lib/server/linear/customers";
+import { getIssues } from "./issues.remote";
 
 const CreateNeedQuery = graphql(`
   mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {
@@ -22,7 +23,6 @@ const CreateIssueQuery = graphql(`
         id
         identifier
         title
-        url
       }
     }
   }
@@ -65,16 +65,22 @@ export const createNeed = form(
       .filter(Boolean)
       .join("\n\n"); // only if customer doesn't exist add company name
 
+    const priority = isUrgent ? 1 : 0;
     const need = await client.request(CreateNeedQuery, {
       input: {
         issueId: issue.issueCreate.issue!.id,
         createAsUser: user.name,
         customerId: customer?.id,
         body: body,
-        priority: isUrgent ? 1.0 : 0.0,
+        priority: priority,
       },
     });
 
-    return need;
+    return {
+      ...issue.issueCreate.issue!,
+      needLevel: priority + 1,
+      hasCurrentCustomerNeed: true,
+      currentCustomerNeedPriority: priority,
+    };
   },
 );

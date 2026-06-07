@@ -1,22 +1,32 @@
-import { query } from "$app/server";
+import { getRequestEvent, query } from "$app/server";
 import { getLinearClient } from "$lib/server/linear/client";
+import { getCustomer } from "$lib/server/linear/customers";
+import { decryptUserCookie } from "$lib/utils/cookies";
 import { graphql } from "../../gql";
 
 const GetNeedlineIssuesQuery = graphql(`
-  query GetNeedlineIssues {
+  query GetNeedlineIssues($customerId: ID) {
     issues(filter: { labels: { name: { containsIgnoreCase: "needline" } } }) {
       nodes {
         id
         identifier
         title
-        url
-        team {
-          id
-        }
-        labels {
+        needs {
           nodes {
-            name
+            customer {
+              name
+            }
+            priority
+          }
+        }
+
+        currentCustomerNeeds: needs(
+          first: 1
+          filter: { customer: { id: { eq: $customerId } } }
+        ) {
+          nodes {
             id
+            priority
           }
         }
       }
@@ -26,12 +36,29 @@ const GetNeedlineIssuesQuery = graphql(`
 
 export const getIssues = query(async () => {
   const client = await getLinearClient();
+  const { cookies } = getRequestEvent();
 
   if (!client) {
     return null;
   }
 
-  const data = await client.request(GetNeedlineIssuesQuery);
+  const user = decryptUserCookie(cookies.get("user") ?? "");
+  const customer = user ? await getCustomer(user.company) : null;
 
-  return data.issues.nodes;
+  const data = await client.request(GetNeedlineIssuesQuery, {
+    customerId: customer?.id ?? null,
+  });
+
+  return data.issues.nodes.map((issue) => {
+    const { needs, currentCustomerNeeds, ...issueWithoutNeeds } = issue;
+    return {
+      ...issueWithoutNeeds,
+      needLevel: issue.needs.nodes
+        .flatMap((i) => i.priority + 1)
+        .reduce((a, b) => a + b, 0),
+      hasCurrentCustomerNeed: issue.currentCustomerNeeds?.nodes?.length > 0,
+      currentCustomerNeedPriority:
+        issue.currentCustomerNeeds?.nodes?.[0]?.priority ?? null,
+    };
+  });
 });

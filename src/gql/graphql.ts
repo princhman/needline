@@ -537,6 +537,8 @@ export type InitiativeCollectionFilter = {
   or?: Array<InitiativeCollectionFilter> | null | undefined;
   /** Filters that the initiative owner must satisfy. */
   owner?: NullableUserFilter | null | undefined;
+  /** [Internal] Comparator for the initiative priority. */
+  priority?: NullableNumberComparator | null | undefined;
   /** Comparator for the initiative slug ID. */
   slugId?: StringComparator | null | undefined;
   /** Filters that needs to be matched by some initiatives. */
@@ -583,6 +585,8 @@ export type InitiativeFilter = {
   or?: Array<InitiativeFilter> | null | undefined;
   /** Filters that the initiative owner must satisfy. */
   owner?: NullableUserFilter | null | undefined;
+  /** [Internal] Comparator for the initiative priority. */
+  priority?: NullableNumberComparator | null | undefined;
   /** Comparator for the initiative slug ID. */
   slugId?: StringComparator | null | undefined;
   /** Comparator for the initiative started at date. */
@@ -1399,6 +1403,8 @@ export type NullableInitiativeFilter = {
   or?: Array<NullableInitiativeFilter> | null | undefined;
   /** Filters that the initiative owner must satisfy. */
   owner?: NullableUserFilter | null | undefined;
+  /** [Internal] Comparator for the initiative priority. */
+  priority?: NullableNumberComparator | null | undefined;
   /** Comparator for the initiative slug ID. */
   slugId?: StringComparator | null | undefined;
   /** Comparator for the initiative started at date. */
@@ -1643,7 +1649,7 @@ export type NullableProjectFilter = {
   null?: boolean | null | undefined;
   /** Compound filters, one of which need to be matched by the project. */
   or?: Array<NullableProjectFilter> | null | undefined;
-  /** Comparator for the projects priority. */
+  /** Comparator for the project priority. */
   priority?: NullableNumberComparator | null | undefined;
   /** Filters that the project's milestones must satisfy. */
   projectMilestones?: ProjectMilestoneCollectionFilter | null | undefined;
@@ -1661,7 +1667,7 @@ export type NullableProjectFilter = {
   startedAt?: NullableDateComparator | null | undefined;
   /** [DEPRECATED] Comparator for the project state. */
   state?: StringComparator | null | undefined;
-  /** Filters that the project's status must satisfy. */
+  /** Filters that the project status must satisfy. */
   status?: ProjectStatusFilter | null | undefined;
   /** Comparator for the project target date. */
   targetDate?: NullableDateComparator | null | undefined;
@@ -1777,7 +1783,7 @@ export type NullableTeamFilter = {
   or?: Array<NullableTeamFilter> | null | undefined;
   /** Filters that the team's parent must satisfy. */
   parent?: NullableTeamFilter | null | undefined;
-  /** Comparator for the team privacy. */
+  /** [DEPRECATED] Comparator for the team privacy. */
   private?: BooleanComparator | null | undefined;
   /** Filters that the team's release pipelines must satisfy. */
   releasePipelines?: ReleasePipelineCollectionFilter | null | undefined;
@@ -1787,6 +1793,8 @@ export type NullableTeamFilter = {
   retiredAt?: NullableDateComparator | null | undefined;
   /** Comparator for the updated at date. */
   updatedAt?: DateComparator | null | undefined;
+  /** Comparator for the team visibility. */
+  visibility?: TeamVisibilityComparator | null | undefined;
 };
 
 /** Template filtering options. */
@@ -1955,7 +1963,7 @@ export type ProjectCollectionFilter = {
   nextProjectMilestone?: ProjectMilestoneFilter | null | undefined;
   /** Compound filters, one of which need to be matched by the project. */
   or?: Array<ProjectCollectionFilter> | null | undefined;
-  /** Comparator for the projects priority. */
+  /** Comparator for the project priority. */
   priority?: NullableNumberComparator | null | undefined;
   /** Filters that the project's milestones must satisfy. */
   projectMilestones?: ProjectMilestoneCollectionFilter | null | undefined;
@@ -1975,7 +1983,7 @@ export type ProjectCollectionFilter = {
   startedAt?: NullableDateComparator | null | undefined;
   /** [DEPRECATED] Comparator for the project state. */
   state?: StringComparator | null | undefined;
-  /** Filters that the project's status must satisfy. */
+  /** Filters that the project status must satisfy. */
   status?: ProjectStatusFilter | null | undefined;
   /** Comparator for the project target date. */
   targetDate?: NullableDateComparator | null | undefined;
@@ -2043,7 +2051,7 @@ export type ProjectFilter = {
   nextProjectMilestone?: ProjectMilestoneFilter | null | undefined;
   /** Compound filters, one of which need to be matched by the project. */
   or?: Array<ProjectFilter> | null | undefined;
-  /** Comparator for the projects priority. */
+  /** Comparator for the project priority. */
   priority?: NullableNumberComparator | null | undefined;
   /** Filters that the project's milestones must satisfy. */
   projectMilestones?: ProjectMilestoneCollectionFilter | null | undefined;
@@ -2061,7 +2069,7 @@ export type ProjectFilter = {
   startedAt?: NullableDateComparator | null | undefined;
   /** [DEPRECATED] Comparator for the project state. */
   state?: StringComparator | null | undefined;
-  /** Filters that the project's status must satisfy. */
+  /** Filters that the project status must satisfy. */
   status?: ProjectStatusFilter | null | undefined;
   /** Comparator for the project target date. */
   targetDate?: NullableDateComparator | null | undefined;
@@ -2691,7 +2699,7 @@ export type TeamFilter = {
   or?: Array<TeamFilter> | null | undefined;
   /** Filters that the team's parent must satisfy. */
   parent?: NullableTeamFilter | null | undefined;
-  /** Comparator for the team privacy. */
+  /** [DEPRECATED] Comparator for the team privacy. */
   private?: BooleanComparator | null | undefined;
   /** Filters that the team's release pipelines must satisfy. */
   releasePipelines?: ReleasePipelineCollectionFilter | null | undefined;
@@ -2701,6 +2709,26 @@ export type TeamFilter = {
   retiredAt?: NullableDateComparator | null | undefined;
   /** Comparator for the updated at date. */
   updatedAt?: DateComparator | null | undefined;
+  /** Comparator for the team visibility. */
+  visibility?: TeamVisibilityComparator | null | undefined;
+};
+
+/** The visibility of a team. A team can be public, private, or restricted within an enclosing private-team boundary. */
+export type TeamVisibility =
+  | 'private'
+  | 'public'
+  | 'restricted';
+
+/** Comparator for team visibility. */
+export type TeamVisibilityComparator = {
+  /** Equals constraint. */
+  eq?: TeamVisibility | null | undefined;
+  /** In-array constraint. */
+  in?: Array<TeamVisibility> | null | undefined;
+  /** Not-equals constraint. */
+  neq?: TeamVisibility | null | undefined;
+  /** Not-in-array constraint. */
+  nin?: Array<TeamVisibility> | null | undefined;
 };
 
 /** User filtering options. */
@@ -2807,15 +2835,12 @@ export type WorkflowStateFilter = {
   updatedAt?: DateComparator | null | undefined;
 };
 
-export type CustomersQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetNeedlineIssuesQueryVariables = Exact<{
+  customerId?: string | number | null | undefined;
+}>;
 
 
-export type CustomersQuery = { customers: { nodes: Array<{ id: string, name: string }> } };
-
-export type GetNeedlineIssuesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetNeedlineIssuesQuery = { issues: { nodes: Array<{ id: string, identifier: string, title: string, url: string, team: { id: string }, labels: { nodes: Array<{ name: string, id: string }> } }> } };
+export type GetNeedlineIssuesQuery = { issues: { nodes: Array<{ id: string, identifier: string, title: string, needs: { nodes: Array<{ priority: number, customer: { name: string } | null }> }, currentCustomerNeeds: { nodes: Array<{ id: string, priority: number }> } }> } };
 
 export type CustomerNeedCreateMutationVariables = Exact<{
   input: CustomerNeedCreateInput;
@@ -2829,7 +2854,7 @@ export type IssueCreateMutationVariables = Exact<{
 }>;
 
 
-export type IssueCreateMutation = { issueCreate: { success: boolean, issue: { id: string, identifier: string, title: string, url: string } | null } };
+export type IssueCreateMutation = { issueCreate: { success: boolean, issue: { id: string, identifier: string, title: string } | null } };
 
 export type CustomerQueryVariables = Exact<{
   filter?: CustomerFilter | null | undefined;
@@ -2840,8 +2865,7 @@ export type CustomerQueryVariables = Exact<{
 export type CustomerQuery = { customers: { nodes: Array<{ id: string, name: string }> } };
 
 
-export const CustomersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Customers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"customers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CustomersQuery, CustomersQueryVariables>;
-export const GetNeedlineIssuesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetNeedlineIssues"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"issues"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"labels"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"containsIgnoreCase"},"value":{"kind":"StringValue","value":"needline","block":false}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetNeedlineIssuesQuery, GetNeedlineIssuesQueryVariables>;
+export const GetNeedlineIssuesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetNeedlineIssues"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"customerId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"issues"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"labels"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"containsIgnoreCase"},"value":{"kind":"StringValue","value":"needline","block":false}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"needs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"customer"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"currentCustomerNeeds"},"name":{"kind":"Name","value":"needs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"customer"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"customerId"}}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetNeedlineIssuesQuery, GetNeedlineIssuesQueryVariables>;
 export const CustomerNeedCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CustomerNeedCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CustomerNeedCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"customerNeedCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<CustomerNeedCreateMutation, CustomerNeedCreateMutationVariables>;
-export const IssueCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"IssueCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"IssueCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"issueCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"issue"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]}}]} as unknown as DocumentNode<IssueCreateMutation, IssueCreateMutationVariables>;
+export const IssueCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"IssueCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"IssueCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"issueCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"issue"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}}]}}]}}]} as unknown as DocumentNode<IssueCreateMutation, IssueCreateMutationVariables>;
 export const CustomerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Customer"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CustomerFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"customers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CustomerQuery, CustomerQueryVariables>;

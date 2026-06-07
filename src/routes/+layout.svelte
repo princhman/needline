@@ -1,16 +1,12 @@
 <script lang="ts">
     import "./layout.css";
-    import favicon from "$lib/assets/favicon.svg";
-    import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
 
     let { children } = $props();
-
-    const queryClient = new QueryClient();
 </script>
 
 <svelte:head
     ><link rel="icon" href="/logo.svg" /><title>Needline</title></svelte:head
 >
-<QueryClientProvider client={queryClient}>
+<div class="flex mx-auto max-w-3xl">
     {@render children()}
-</QueryClientProvider>
+</div>
