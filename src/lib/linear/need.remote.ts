@@ -11,6 +11,11 @@ const CreateNeedQuery = graphql(`
   mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {
     customerNeedCreate(input: $input) {
       success
+      need {
+        id
+        body
+        priority
+      }
     }
   }
 `);
@@ -66,7 +71,7 @@ export const createNeed = form(
       .join("\n\n"); // only if customer doesn't exist add company name
 
     const priority = isUrgent ? 1 : 0;
-    const need = await client.request(CreateNeedQuery, {
+    const result = await client.request(CreateNeedQuery, {
       input: {
         issueId: issue.issueCreate.issue!.id,
         createAsUser: user.name,
@@ -79,8 +84,48 @@ export const createNeed = form(
     return {
       ...issue.issueCreate.issue!,
       needLevel: priority + 1,
-      hasCurrentCustomerNeed: true,
-      currentCustomerNeedPriority: priority,
+      currentCustomerNeed: result.customerNeedCreate.need,
+    };
+  },
+);
+
+export const upvoteNeed = form(
+  v.object({
+    issueId: v.string(),
+    why: v.string(),
+    isUrgent: v.optional(v.boolean(), false),
+  }),
+  async ({ issueId, why, isUrgent }) => {
+    const client = await getLinearClient();
+    const user = getUserFromSession();
+
+    if (!client || !user) {
+      return null;
+    }
+
+    const customer = await getCustomer(user.company);
+    const body = [
+      `${why}`,
+      customer == null ? `**Company:** ${user.company}` : null,
+      `**Email:** ${user.email}`,
+      "_Submitted via Needline._",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    const priority = isUrgent ? 1 : 0;
+    const need = await client.request(CreateNeedQuery, {
+      input: {
+        issueId: issueId,
+        createAsUser: user.name,
+        customerId: customer?.id,
+        body: body,
+        priority: priority,
+      },
+    });
+    return {
+      priorityDelta: priority,
+      ...need.customerNeedCreate.need,
     };
   },
 );

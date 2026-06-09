@@ -48,7 +48,7 @@
             <UserAuthStatus />
         </div>
     </div>
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-1">
         {#if issues.current}
             {#each issues.current as issue}
                 <Issue {issue} />

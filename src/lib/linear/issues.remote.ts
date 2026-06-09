@@ -27,6 +27,7 @@ const GetNeedlineIssuesQuery = graphql(`
           nodes {
             id
             priority
+            body
           }
         }
       }
@@ -56,9 +57,7 @@ export const getIssues = query(async () => {
       needLevel: issue.needs.nodes
         .flatMap((i) => i.priority + 1)
         .reduce((a, b) => a + b, 0),
-      hasCurrentCustomerNeed: issue.currentCustomerNeeds?.nodes?.length > 0,
-      currentCustomerNeedPriority:
-        issue.currentCustomerNeeds?.nodes?.[0]?.priority ?? null,
+      currentCustomerNeed: currentCustomerNeeds.nodes[0] ?? null, // assume for now that there is only one same customer request per issue
     };
   });
 });

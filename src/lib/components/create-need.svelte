@@ -6,6 +6,7 @@
     import Checkbox from "./ui/checkbox/checkbox.svelte";
     import Label from "./ui/label/label.svelte";
     import { getIssues } from "$lib/linear/issues.remote";
+    import Textarea from "./ui/textarea/textarea.svelte";
 
     const isUrgentField = createNeed.fields.isUrgent.as("checkbox");
     let open = $state(false);
@@ -50,7 +51,7 @@
                 </div>
                 <div class="grid gap-3">
                     <Label for="why">Why?</Label>
-                    <Input
+                    <Textarea
                         {...createNeed.fields.why.as("text")}
                         id="why"
                         name="why"
