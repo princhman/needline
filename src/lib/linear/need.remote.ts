@@ -5,11 +5,26 @@ import { getLinearClient } from "$lib/server/linear/client";
 import { env } from "$env/dynamic/private";
 import { getUserFromSession } from "$lib/server/company/auth";
 import { getCustomer } from "$lib/server/linear/customers";
-import { getIssues } from "./issues.remote";
 
 const CreateNeedQuery = graphql(`
   mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {
     customerNeedCreate(input: $input) {
+      success
+      need {
+        id
+        body
+        priority
+      }
+    }
+  }
+`);
+
+const updateNeedQuery = graphql(`
+  mutation CustomerNeedUpdate(
+    $customerNeedUpdateId: String!
+    $input: CustomerNeedUpdateInput!
+  ) {
+    customerNeedUpdate(id: $customerNeedUpdateId, input: $input) {
       success
       need {
         id
@@ -94,8 +109,12 @@ export const upvoteNeed = form(
     issueId: v.string(),
     why: v.string(),
     isUrgent: v.optional(v.boolean(), false),
+    customerNeedId: v.optional(v.string()),
+    initialPriority: v.optional(
+      v.pipe(v.union([v.literal("0"), v.literal("1")]), v.transform(Number)),
+    ),
   }),
-  async ({ issueId, why, isUrgent }) => {
+  async ({ issueId, why, isUrgent, customerNeedId, initialPriority }) => {
     const client = await getLinearClient();
     const user = getUserFromSession();
 
@@ -114,18 +133,32 @@ export const upvoteNeed = form(
       .join("\n\n");
 
     const priority = isUrgent ? 1 : 0;
-    const need = await client.request(CreateNeedQuery, {
-      input: {
-        issueId: issueId,
-        createAsUser: user.name,
-        customerId: customer?.id,
-        body: body,
-        priority: priority,
-      },
-    });
-    return {
-      priorityDelta: priority,
-      ...need.customerNeedCreate.need,
-    };
+    if (customerNeedId && initialPriority != undefined) {
+      const need = await client.request(updateNeedQuery, {
+        customerNeedUpdateId: customerNeedId,
+        input: {
+          body: body,
+          priority: priority,
+        },
+      });
+      return {
+        needLevelDelta: priority - initialPriority,
+        ...need.customerNeedUpdate.need,
+      };
+    } else {
+      const need = await client.request(CreateNeedQuery, {
+        input: {
+          issueId: issueId,
+          createAsUser: user.name,
+          customerId: customer?.id,
+          body: body,
+          priority: priority,
+        },
+      });
+      return {
+        needLevelDelta: priority + 1,
+        ...need.customerNeedCreate.need,
+      };
+    }
   },
 );
