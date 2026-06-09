@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { Issue } from "$lib/utils/types";
+    import type { Item } from "$lib/utils/types";
     import Upvote from "./upvote.svelte";
 
-    let { issue = $bindable() }: { issue: Issue } = $props();
+    let { item = $bindable() }: { item: Item } = $props();
 
     // I need to derive if the company upvoted and created customer request
     // Then when they want to upvote they have a popover where they can enter the reason why they want it and make it urgent
@@ -12,12 +12,12 @@
 
 <div class="flex min-w-full border hover:bg-accent">
     <div class="flex px-4 py-1 justify-between w-full items-center text-sm">
-        <span>{issue.title}</span>
+        <span>{item.title}</span>
         <div class="flex items-center gap-2">
             <span>
-                {issue.needLevel}
+                {item.needLevel}
             </span>
-            <Upvote bind:issue />
+            <Upvote bind:item />
         </div>
     </div>
 </div>

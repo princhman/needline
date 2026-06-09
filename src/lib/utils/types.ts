@@ -1,5 +1,3 @@
-import type { getIssues } from "$lib/linear/issues.remote";
+import type { getItems } from "$lib/linear/items.remote";
 
-export type Issue = NonNullable<
-  ReturnType<typeof getIssues>["current"]
->[number];
+export type Item = NonNullable<ReturnType<typeof getItems>["current"]>[number];

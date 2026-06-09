@@ -1,9 +1,6 @@
 <script lang="ts">
     import { env } from "$env/dynamic/public";
     import type { PageData } from "./$types";
-    import { getIssues } from "$lib/linear/issues.remote";
-    import CreateNeed from "$lib/components/create-need.svelte";
-    import UserAuthStatus from "$lib/components/user-auth-status.svelte";
     import Board from "$lib/components/board.svelte";
 
     let { data }: { data: PageData } = $props();

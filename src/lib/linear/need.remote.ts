@@ -48,7 +48,7 @@ const CreateIssueQuery = graphql(`
   }
 `);
 
-const DeleteIssueQuery = graphql(`
+const DeleteNeedQuery = graphql(`
   mutation CustomerNeedDelete($customerNeedDeleteId: String!) {
     customerNeedDelete(id: $customerNeedDeleteId) {
       success
@@ -108,21 +108,30 @@ export const createNeed = form(
       ...issue.issueCreate.issue!,
       needLevel: priority + 1,
       currentCustomerNeed: result.customerNeedCreate.need,
+      itemType: "issue" as const,
     };
   },
 );
 
 export const upvoteNeed = form(
   v.object({
-    issueId: v.string(),
+    itemId: v.string(),
     why: v.string(),
     isUrgent: v.optional(v.boolean(), false),
     customerNeedId: v.optional(v.string()),
     initialPriority: v.optional(
       v.pipe(v.union([v.literal("0"), v.literal("1")]), v.transform(Number)),
     ),
+    itemType: v.picklist(["issue", "project"]),
   }),
-  async ({ issueId, why, isUrgent, customerNeedId, initialPriority }) => {
+  async ({
+    itemId,
+    why,
+    isUrgent,
+    customerNeedId,
+    initialPriority,
+    itemType,
+  }) => {
     const client = await getLinearClient();
     const user = getUserFromSession();
 
@@ -154,15 +163,29 @@ export const upvoteNeed = form(
         ...need.customerNeedUpdate.need,
       };
     } else {
-      const need = await client.request(CreateNeedQuery, {
-        input: {
-          issueId: issueId,
-          createAsUser: user.name,
-          customerId: customer?.id,
-          body: body,
-          priority: priority,
-        },
-      });
+      let need;
+      if (itemType === "issue") {
+        need = await client.request(CreateNeedQuery, {
+          input: {
+            issueId: itemId,
+            createAsUser: user.name,
+            customerId: customer?.id,
+            body: body,
+            priority: priority,
+          },
+        });
+      } else {
+        need = await client.request(CreateNeedQuery, {
+          input: {
+            projectId: itemId,
+            createAsUser: user.name,
+            customerId: customer?.id,
+            body: body,
+            priority: priority,
+          },
+        });
+      }
+
       return {
         needLevelDelta: priority + 1,
         ...need.customerNeedCreate.need,
@@ -176,7 +199,7 @@ export const deleteUpvote = command(v.string(), async (customerNeedId) => {
   if (!client) {
     return null;
   }
-  const result = await client.request(DeleteIssueQuery, {
+  const result = await client.request(DeleteNeedQuery, {
     customerNeedDeleteId: customerNeedId,
   });
 

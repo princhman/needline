@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Dialog from "$lib/components/ui/dialog";
-    import type { Issue } from "$lib/utils/types";
+    import type { Item } from "$lib/utils/types";
     import { ChevronsUp, ChevronUp, Pencil, Trash2 } from "@lucide/svelte";
     import { Button, buttonVariants } from "$lib/components/ui/button";
     import { Label } from "./ui/label";
@@ -9,14 +9,14 @@
     import Textarea from "./ui/textarea/textarea.svelte";
     import type { RemoteFormIssue } from "@sveltejs/kit";
 
-    let { issue = $bindable() }: { issue: Issue } = $props();
-    let upvoteState = $derived((issue.currentCustomerNeed?.priority ?? -1) + 1); // 0 - nothing, 1 - needed, 2 - important
+    let { item: item = $bindable() }: { item: Item } = $props();
+    let upvoteState = $derived((item.currentCustomerNeed?.priority ?? -1) + 1); // 0 - nothing, 1 - needed, 2 - important
 
-    let updateForm = $derived(upvoteNeed.for(issue.id));
+    let updateForm = $derived(upvoteNeed.for(item.id));
     let isUrgentField = $derived(
         updateForm.fields.isUrgent.as(
             "checkbox",
-            issue.currentCustomerNeed?.priority == 1,
+            item.currentCustomerNeed?.priority == 1,
         ),
     );
 
@@ -41,15 +41,15 @@
     }
 
     async function deletUpvote() {
-        if (!issue.currentCustomerNeed) return;
-        await deleteUpvote(issue.currentCustomerNeed?.id);
+        if (!item.currentCustomerNeed) return;
+        await deleteUpvote(item.currentCustomerNeed?.id);
         open = false;
 
-        issue = {
-            ...issue,
+        item = {
+            ...item,
             currentCustomerNeed: null,
             needLevel:
-                issue.needLevel - (issue.currentCustomerNeed?.priority + 1),
+                item.needLevel - (item.currentCustomerNeed?.priority + 1),
         };
     }
     // if already upvoted allow to edit the upvote?
@@ -62,14 +62,14 @@
             size="icon"
             variant="outline"
             class="group relative hover:accent-accent"
-            aria-label={issue.currentCustomerNeed ? "Edit need" : "Upvote"}
+            aria-label={item.currentCustomerNeed ? "Edit need" : "Upvote"}
         >
             <span
                 class={[
                     "inline-flex size-4 items-center justify-center",
                     upvoteState === 1 && "text-yellow-500",
                     upvoteState === 2 && "text-red-600",
-                    issue.currentCustomerNeed &&
+                    item.currentCustomerNeed &&
                         "transition-opacity group-hover:opacity-0",
                 ]}
             >
@@ -79,7 +79,7 @@
                     <ChevronUp />
                 {/if}
             </span>
-            {#if issue.currentCustomerNeed}
+            {#if item.currentCustomerNeed}
                 <span
                     class="absolute inset-0 inline-flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
                 >
@@ -90,10 +90,10 @@
     </Dialog.Trigger>
     <Dialog.Content>
         <Dialog.Header>
-            {#if issue.currentCustomerNeed}
-                Updating vote for {issue.title}
+            {#if item.currentCustomerNeed}
+                Updating vote for {item.title}
             {:else}
-                Upvoting {issue.title}
+                Upvoting {item.title}
             {/if}
         </Dialog.Header>
         <form
@@ -103,9 +103,9 @@
 
                 if (ok && result) {
                     open = false;
-                    issue = {
-                        ...issue,
-                        needLevel: issue.needLevel + result.needLevelDelta,
+                    item = {
+                        ...item,
+                        needLevel: item.needLevel + result.needLevelDelta,
                         currentCustomerNeed: {
                             id: result.id,
                             priority: result.priority,
@@ -118,17 +118,18 @@
             })}
         >
             <div class="grid gap-4">
-                <input type="hidden" name="issueId" value={issue.id} />
-                {#if issue.currentCustomerNeed}
+                <input type="hidden" name="itemId" value={item.id} />
+                <input type="hidden" name="itemType" value={item.itemType} />
+                {#if item.currentCustomerNeed}
                     <input
                         type="hidden"
                         name="initialPriority"
-                        value={issue.currentCustomerNeed.priority}
+                        value={item.currentCustomerNeed.priority}
                     />
                     <input
                         type="hidden"
                         name="customerNeedId"
-                        value={issue.currentCustomerNeed.id}
+                        value={item.currentCustomerNeed.id}
                     />
                 {/if}
 
@@ -139,7 +140,7 @@
                         {...updateForm.fields.why.as(
                             "text",
                             getWhyFromBody(
-                                issue.currentCustomerNeed?.body ?? "",
+                                item.currentCustomerNeed?.body ?? "",
                             ),
                         )}
                         placeholder="Why is it important?"
@@ -171,7 +172,7 @@
 
             <Dialog.Footer class="pt-4">
                 <!-- open in if to prevent delete button flicker -->
-                {#if open && issue.currentCustomerNeed}
+                {#if open && item.currentCustomerNeed}
                     <Button
                         variant="destructive"
                         size="icon"
@@ -188,7 +189,7 @@
                     Cancel
                 </Dialog.Close>
                 <Button type="submit" disabled={updateForm.pending > 0}>
-                    {@const msg = issue.currentCustomerNeed ? "Updat" : "Upvot"}
+                    {@const msg = item.currentCustomerNeed ? "Updat" : "Upvot"}
                     {#if updateForm.pending}{msg}ing...{:else}{msg}e{/if}</Button
                 >
             </Dialog.Footer>

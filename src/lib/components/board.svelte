@@ -1,17 +1,17 @@
 <script lang="ts">
-    import { getIssues } from "$lib/linear/issues.remote";
+    import { getItems } from "$lib/linear/items.remote";
     import { RefreshCcw } from "@lucide/svelte";
-    import Issue from "./issue.svelte";
+    import Item from "./item.svelte";
     import CreateNeed from "./create-need.svelte";
     import UserAuthStatus from "./user-auth-status.svelte";
 
-    const issues = getIssues();
+    const items = getItems();
 
     let isSpinning = $state(false);
     let shouldStopAfterIteration = $state(false);
 
     $effect(() => {
-        if (issues.loading) {
+        if (items.loading) {
             isSpinning = true;
             shouldStopAfterIteration = false;
         } else if (isSpinning) {
@@ -33,8 +33,8 @@
         <div class="flex gap-2 items-center">
             <button
                 class="refresh-button inline-flex size-8 items-center justify-center border p-0 leanding-none"
-                onclick={() => issues.refresh()}
-                disabled={issues.loading}
+                onclick={() => items.refresh()}
+                disabled={items.loading}
             >
                 <span
                     class="refresh-icon inline-flex size-4 items-center justify-center"
@@ -49,13 +49,13 @@
         </div>
     </div>
     <div class="flex flex-col gap-1">
-        {#if issues.current}
-            {#each issues.current as issue}
-                <Issue {issue} />
+        {#if items.current}
+            {#each items.current as item}
+                <Item {item} />
             {/each}
-        {:else if issues.loading}
+        {:else if items.loading}
             <p>Loading...</p>
-        {:else if issues.error}
+        {:else if items.error}
             <p>Failed to load issues</p>
         {/if}
     </div>

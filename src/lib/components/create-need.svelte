@@ -5,13 +5,13 @@
     import Input from "./ui/input/input.svelte";
     import Checkbox from "./ui/checkbox/checkbox.svelte";
     import Label from "./ui/label/label.svelte";
-    import { getIssues } from "$lib/linear/issues.remote";
+    import { getItems } from "$lib/linear/items.remote";
     import Textarea from "./ui/textarea/textarea.svelte";
 
     const isUrgentField = createNeed.fields.isUrgent.as("checkbox");
     let open = $state(false);
 
-    const issues = getIssues();
+    const items = getItems();
 </script>
 
 <Dialog.Root bind:open>
@@ -27,7 +27,7 @@
                 const ok = await form.submit().updates();
 
                 if (ok && createNeed.result) {
-                    issues.set([createNeed.result, ...(issues.current ?? [])]);
+                    items.set([createNeed.result, ...(items.current ?? [])]);
                 }
                 form.element.reset();
                 open = false;
