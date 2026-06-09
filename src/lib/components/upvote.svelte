@@ -1,19 +1,20 @@
 <script lang="ts">
     import * as Dialog from "$lib/components/ui/dialog";
     import type { Issue } from "$lib/utils/types";
-    import { ChevronsUp, ChevronUp, Pencil } from "@lucide/svelte";
+    import { ChevronsUp, ChevronUp, Pencil, Trash2 } from "@lucide/svelte";
     import { Button, buttonVariants } from "$lib/components/ui/button";
     import { Label } from "./ui/label";
     import { Checkbox } from "./ui/checkbox";
-    import { upvoteNeed } from "$lib/linear/need.remote";
+    import { deleteUpvote, upvoteNeed } from "$lib/linear/need.remote";
     import Textarea from "./ui/textarea/textarea.svelte";
     import type { RemoteFormIssue } from "@sveltejs/kit";
 
     let { issue = $bindable() }: { issue: Issue } = $props();
     let upvoteState = $derived((issue.currentCustomerNeed?.priority ?? -1) + 1); // 0 - nothing, 1 - needed, 2 - important
 
+    let updateForm = $derived(upvoteNeed.for(issue.id));
     let isUrgentField = $derived(
-        upvoteNeed.fields.isUrgent.as(
+        updateForm.fields.isUrgent.as(
             "checkbox",
             issue.currentCustomerNeed?.priority == 1,
         ),
@@ -23,13 +24,33 @@
     let issues = $state([] as RemoteFormIssue[]);
 
     function getWhyFromBody(body: string | null) {
-        return (
-            body
-                ?.split("\n\n**Company:**")[0]
-                .split("\n\n**Email:**")[0]
-                .split("\n\n_Submitted via Needline._")[0]
-                .trim() ?? ""
-        );
+        if (!body) return "";
+
+        const markers = [
+            "**Company:**",
+            "**Email:**",
+            "_Submitted via Needline._",
+        ];
+
+        const firstMarkerIndex = markers
+            .map((marker) => body.indexOf(marker))
+            .filter((index) => index !== -1)
+            .sort((a, b) => a - b)[0];
+
+        return body.slice(0, firstMarkerIndex ?? body.length).trim();
+    }
+
+    async function deletUpvote() {
+        if (!issue.currentCustomerNeed) return;
+        await deleteUpvote(issue.currentCustomerNeed?.id);
+        open = false;
+
+        issue = {
+            ...issue,
+            currentCustomerNeed: null,
+            needLevel:
+                issue.needLevel - (issue.currentCustomerNeed?.priority + 1),
+        };
     }
     // if already upvoted allow to edit the upvote?
     // when hover over it show pencil which would open the menu to edit the reason and urgency i guess
@@ -76,11 +97,12 @@
             {/if}
         </Dialog.Header>
         <form
-            {...upvoteNeed.enhance(async (form) => {
+            {...updateForm.enhance(async (form) => {
                 const ok = await form.submit().updates();
-                const result = upvoteNeed.result;
+                const result = updateForm.result;
 
                 if (ok && result) {
+                    open = false;
                     issue = {
                         ...issue,
                         needLevel: issue.needLevel + result.needLevelDelta,
@@ -90,7 +112,6 @@
                             body: result.body,
                         },
                     };
-                    open = false;
                 } else {
                     issues = form.fields.allIssues() ?? [];
                 }
@@ -115,9 +136,11 @@
                     <Label for="why">Why?</Label>
                     <Textarea
                         id="why"
-                        {...upvoteNeed.fields.why.as(
+                        {...updateForm.fields.why.as(
                             "text",
-                            getWhyFromBody(issue.currentCustomerNeed?.body),
+                            getWhyFromBody(
+                                issue.currentCustomerNeed?.body ?? "",
+                            ),
                         )}
                         placeholder="Why is it important?"
                         selectEndOnFocus={true}
@@ -146,16 +169,27 @@
                 </div>
             {/if}
 
-            <Dialog.Footer>
+            <Dialog.Footer class="pt-4">
+                <!-- open in if to prevent delete button flicker -->
+                {#if open && issue.currentCustomerNeed}
+                    <Button
+                        variant="destructive"
+                        size="icon"
+                        class="sm:mr-auto"
+                        onclick={deletUpvote}
+                    >
+                        <Trash2 />
+                    </Button>
+                {/if}
                 <Dialog.Close
                     type="button"
                     class={buttonVariants({ variant: "outline" })}
                 >
                     Cancel
                 </Dialog.Close>
-                <Button type="submit" disabled={upvoteNeed.pending > 0}>
+                <Button type="submit" disabled={updateForm.pending > 0}>
                     {@const msg = issue.currentCustomerNeed ? "Updat" : "Upvot"}
-                    {#if upvoteNeed.pending}{msg}ing...{:else}{msg}e{/if}</Button
+                    {#if updateForm.pending}{msg}ing...{:else}{msg}e{/if}</Button
                 >
             </Dialog.Footer>
         </form>

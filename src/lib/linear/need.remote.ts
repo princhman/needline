@@ -1,4 +1,4 @@
-import { form } from "$app/server";
+import { form, command } from "$app/server";
 import * as v from "valibot";
 import { graphql } from "../../gql";
 import { getLinearClient } from "$lib/server/linear/client";
@@ -19,7 +19,7 @@ const CreateNeedQuery = graphql(`
   }
 `);
 
-const updateNeedQuery = graphql(`
+const UpdateNeedQuery = graphql(`
   mutation CustomerNeedUpdate(
     $customerNeedUpdateId: String!
     $input: CustomerNeedUpdateInput!
@@ -44,6 +44,14 @@ const CreateIssueQuery = graphql(`
         identifier
         title
       }
+    }
+  }
+`);
+
+const DeleteIssueQuery = graphql(`
+  mutation CustomerNeedDelete($customerNeedDeleteId: String!) {
+    customerNeedDelete(id: $customerNeedDeleteId) {
+      success
     }
   }
 `);
@@ -134,7 +142,7 @@ export const upvoteNeed = form(
 
     const priority = isUrgent ? 1 : 0;
     if (customerNeedId && initialPriority != undefined) {
-      const need = await client.request(updateNeedQuery, {
+      const need = await client.request(UpdateNeedQuery, {
         customerNeedUpdateId: customerNeedId,
         input: {
           body: body,
@@ -162,3 +170,15 @@ export const upvoteNeed = form(
     }
   },
 );
+
+export const deleteUpvote = command(v.string(), async (customerNeedId) => {
+  const client = await getLinearClient();
+  if (!client) {
+    return null;
+  }
+  const result = await client.request(DeleteIssueQuery, {
+    customerNeedDeleteId: customerNeedId,
+  });
+
+  return result.customerNeedDelete.success;
+});

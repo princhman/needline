@@ -18,6 +18,7 @@ type Documents = {
     "\n  mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {\n    customerNeedCreate(input: $input) {\n      success\n      need {\n        id\n        body\n        priority\n      }\n    }\n  }\n": typeof types.CustomerNeedCreateDocument,
     "\n  mutation CustomerNeedUpdate(\n    $customerNeedUpdateId: String!\n    $input: CustomerNeedUpdateInput!\n  ) {\n    customerNeedUpdate(id: $customerNeedUpdateId, input: $input) {\n      success\n      need {\n        id\n        body\n        priority\n      }\n    }\n  }\n": typeof types.CustomerNeedUpdateDocument,
     "\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n      }\n    }\n  }\n": typeof types.IssueCreateDocument,
+    "\n  mutation CustomerNeedDelete($customerNeedDeleteId: String!) {\n    customerNeedDelete(id: $customerNeedDeleteId) {\n      success\n    }\n  }\n": typeof types.CustomerNeedDeleteDocument,
     "\n  query Customer($filter: CustomerFilter, $first: Int) {\n    customers(filter: $filter, first: $first) {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CustomerDocument,
 };
 const documents: Documents = {
@@ -25,6 +26,7 @@ const documents: Documents = {
     "\n  mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {\n    customerNeedCreate(input: $input) {\n      success\n      need {\n        id\n        body\n        priority\n      }\n    }\n  }\n": types.CustomerNeedCreateDocument,
     "\n  mutation CustomerNeedUpdate(\n    $customerNeedUpdateId: String!\n    $input: CustomerNeedUpdateInput!\n  ) {\n    customerNeedUpdate(id: $customerNeedUpdateId, input: $input) {\n      success\n      need {\n        id\n        body\n        priority\n      }\n    }\n  }\n": types.CustomerNeedUpdateDocument,
     "\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n      }\n    }\n  }\n": types.IssueCreateDocument,
+    "\n  mutation CustomerNeedDelete($customerNeedDeleteId: String!) {\n    customerNeedDelete(id: $customerNeedDeleteId) {\n      success\n    }\n  }\n": types.CustomerNeedDeleteDocument,
     "\n  query Customer($filter: CustomerFilter, $first: Int) {\n    customers(filter: $filter, first: $first) {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n": types.CustomerDocument,
 };
 
@@ -58,6 +60,10 @@ export function graphql(source: "\n  mutation CustomerNeedUpdate(\n    $customer
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CustomerNeedDelete($customerNeedDeleteId: String!) {\n    customerNeedDelete(id: $customerNeedDeleteId) {\n      success\n    }\n  }\n"): (typeof documents)["\n  mutation CustomerNeedDelete($customerNeedDeleteId: String!) {\n    customerNeedDelete(id: $customerNeedDeleteId) {\n      success\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

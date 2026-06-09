@@ -1,7 +1,4 @@
 <script lang="ts">
-    import { getIssues } from "$lib/linear/issues.remote";
-    import { ChevronsUp, ChevronUp } from "@lucide/svelte";
-    import Button from "./ui/button/button.svelte";
     import type { Issue } from "$lib/utils/types";
     import Upvote from "./upvote.svelte";
 

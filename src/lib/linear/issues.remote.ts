@@ -57,7 +57,7 @@ export const getIssues = query(async () => {
       needLevel: issue.needs.nodes
         .flatMap((i) => i.priority + 1)
         .reduce((a, b) => a + b, 0),
-      currentCustomerNeed: currentCustomerNeeds.nodes[0] ?? null, // assume for now that there is only one same customer request per issue
+      currentCustomerNeed: currentCustomerNeeds.nodes.at(0) ?? null, // assume for now that there is only one same customer request per issue
     };
   });
 });
