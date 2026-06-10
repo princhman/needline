@@ -9,7 +9,8 @@
     import Textarea from "./ui/textarea/textarea.svelte";
     import type { RemoteFormIssue } from "@sveltejs/kit";
 
-    let { item: item = $bindable() }: { item: Item } = $props();
+    let { item, onUpdate }: { item: Item; onUpdate: (item: Item) => void } =
+        $props();
     let upvoteState = $derived((item.currentCustomerNeed?.priority ?? -1) + 1); // 0 - nothing, 1 - needed, 2 - important
 
     let updateForm = $derived(upvoteNeed.for(item.id));
@@ -40,20 +41,20 @@
         return body.slice(0, firstMarkerIndex ?? body.length).trim();
     }
 
-    async function deletUpvote() {
+    async function deleteVote() {
         if (!item.currentCustomerNeed) return;
         await deleteUpvote(item.currentCustomerNeed?.id);
         open = false;
 
-        item = {
+        const updatedItem = {
             ...item,
             currentCustomerNeed: null,
             needLevel:
                 item.needLevel - (item.currentCustomerNeed?.priority + 1),
         };
+
+        onUpdate(updatedItem);
     }
-    // if already upvoted allow to edit the upvote?
-    // when hover over it show pencil which would open the menu to edit the reason and urgency i guess
 </script>
 
 <Dialog.Root bind:open>
@@ -103,7 +104,7 @@
 
                 if (ok && result) {
                     open = false;
-                    item = {
+                    const updatedItem = {
                         ...item,
                         needLevel: item.needLevel + result.needLevelDelta,
                         currentCustomerNeed: {
@@ -112,6 +113,7 @@
                             body: result.body,
                         },
                     };
+                    onUpdate(updatedItem);
                 } else {
                     issues = form.fields.allIssues() ?? [];
                 }
@@ -177,7 +179,7 @@
                         variant="destructive"
                         size="icon"
                         class="sm:mr-auto"
-                        onclick={deletUpvote}
+                        onclick={deleteVote}
                     >
                         <Trash2 />
                     </Button>

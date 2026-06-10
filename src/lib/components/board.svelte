@@ -1,11 +1,29 @@
 <script lang="ts">
     import { getItems } from "$lib/linear/items.remote";
     import { RefreshCcw } from "@lucide/svelte";
-    import Item from "./item.svelte";
+    import { type Item as ItemType } from "$lib/utils/types";
     import CreateNeed from "./create-need.svelte";
     import UserAuthStatus from "./user-auth-status.svelte";
+    import { groupItems } from "$lib/utils/groupItems";
+    import { getStatusColor } from "$lib/utils/statusColor";
+    import Item from "./item.svelte";
 
-    const items = getItems();
+    let items = getItems();
+    let boardItems = $state<ItemType[]>([]);
+
+    $effect(() => {
+        if (items.current) {
+            boardItems = items.current;
+        }
+    });
+
+    function updateItem(updatedItem: ItemType) {
+        boardItems = boardItems.map((item) =>
+            item.id === updatedItem.id ? updatedItem : item,
+        );
+    }
+
+    let groupedItems = $derived(groupItems(boardItems));
 
     let isSpinning = $state(false);
     let shouldStopAfterIteration = $state(false);
@@ -49,15 +67,25 @@
         </div>
     </div>
     <div class="flex flex-col gap-1">
-        {#if items.current}
-            {#each items.current as item}
-                <Item {item} />
-            {/each}
-        {:else if items.loading}
-            <p>Loading...</p>
-        {:else if items.error}
-            <p>Failed to load issues</p>
-        {/if}
+        {#each groupedItems as [status, items]}
+            <div class="flex flex-col pb-3 gap-1">
+                <div class="relative overflow-hidden">
+                    <div
+                        class={[
+                            "absolute inset-0 opacity-50",
+                            getStatusColor(status),
+                        ]}
+                    ></div>
+                    <span class="relative text-xl pl-2">{status}</span>
+                </div>
+
+                <div class="pl-4 flex flex-col gap-1">
+                    {#each items as item}
+                        <Item {item} onUpdate={updateItem} />
+                    {/each}
+                </div>
+            </div>
+        {/each}
     </div>
 </div>
 

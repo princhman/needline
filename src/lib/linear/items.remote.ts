@@ -26,6 +26,9 @@ const GetNeedlineItemsQuery = graphql(`
             body
           }
         }
+        status: state {
+          type
+        }
       }
     }
     projects(filter: { labels: { name: { containsIgnoreCase: "needline" } } }) {
@@ -47,6 +50,9 @@ const GetNeedlineItemsQuery = graphql(`
             priority
             body
           }
+        }
+        status {
+          type
         }
       }
     }

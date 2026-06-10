@@ -43,6 +43,9 @@ const CreateIssueQuery = graphql(`
         id
         identifier
         title
+        status: state {
+          type
+        }
       }
     }
   }
