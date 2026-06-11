@@ -1,13 +1,8 @@
 import { getRequestEvent } from "$app/server";
 import { env } from "$env/dynamic/private";
 import { decryptUserCookie } from "$lib/utils/cookies";
+import type { User } from "$lib/utils/types";
 import { publicDecrypt, constants } from "node:crypto";
-
-export type User = {
-  email: string;
-  name: string;
-  company: string;
-};
 
 export const verifyUser = (value: string) => {
   try {

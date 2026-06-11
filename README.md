@@ -1,42 +1,31 @@
-# sv
+# Needline
+Minimal public customer portal that integrates directly into Linear (no db in between)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+> This project uses experimental `Remote Functions` from Svelte!
+## Why?
+Linear is amazing with what it does, but I do not want to pay more money to get a simple upvoting system. 
 
-## Creating a project
+_Needline_ makes it super easy to get customer needs and allow other customers to upvote. It brings that feedback directly into linear. 
+## How it works?
+Any Linear issue or project tagged with `needline` is shown in the portal.
 
-If you're seeing this, you've probably already done this step. Congrats!
+Customers can submit a request with:
+- what they need
+- why they need it
+- urgency
 
-```sh
-# create a new project
-npx sv create my-app
-```
+Needline calculates a `needLevel` from the number and urgency of requests, then displays it next to each item.
 
-To recreate this project with the same configuration:
+Authenticated users can submit requests on behalf of their customer company.
 
-```sh
-# recreate this project
-bun x sv@0.15.3 create --template minimal --types ts --add tailwindcss="plugins:typography" --install bun needline
-```
+## Mental model
 
-## Developing
+Linear remains the source of truth:
+- tagged issues/projects are shown publicly
+- customer requests are attached back to Linear
+- request volume and urgency determine the visible need level
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## More detail
+- [Auth](docs/auth.md)
+- [Upvoting](docs/upvoting.md)
+- [Linear auth](docs/linear-auth.md)
