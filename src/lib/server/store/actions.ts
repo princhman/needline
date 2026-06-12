@@ -44,7 +44,12 @@ export const saveToken = async (
   refreshToken: string,
   expiresInSeconds: number,
 ) => {
-  const data = { token: { accessToken, refreshToken, expiresInSeconds } };
+  const expiresAt = new Date(
+    Date.now() + expiresInSeconds * 1000,
+  ).toISOString();
+  const data = v.parse(schema, {
+    token: { accessToken, refreshToken, expiresAt },
+  });
   const key = Buffer.from(env.STORE_FILE_ENCRYPTION, "base64");
   const iv = randomBytes(12);
 
@@ -57,10 +62,13 @@ export const saveToken = async (
   ]);
 
   const authTag = cipher.getAuthTag();
+  const file = Bun.file(FILE_NAME);
 
-  return [
-    iv.toString("base64url"),
-    encrypted.toString("base64url"),
-    authTag.toString("base64url"),
-  ].join(".");
+  await file.write(
+    [
+      iv.toString("base64url"),
+      encrypted.toString("base64url"),
+      authTag.toString("base64url"),
+    ].join("."),
+  );
 };

@@ -1,6 +1,6 @@
 import { redirect, error } from "@sveltejs/kit";
 import { exchangeCodeForToken } from "$lib/server/linear/auth";
-import { saveToken } from "$lib/server/db/token";
+import { saveToken } from "$lib/server/store/actions";
 
 import type { RequestHandler } from "./$types";
 
@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({ url }) => {
     throw error(500, "Missing token data");
   }
 
-  saveToken(tokens.access_token, tokens.refresh_token, tokens.expires_in);
+  await saveToken(tokens.access_token, tokens.refresh_token, tokens.expires_in);
 
   return redirect(302, "/");
 };
