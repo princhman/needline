@@ -1,8 +1,13 @@
 <script lang="ts">
     import type { Item } from "$lib/utils/types";
+    import type { PageData } from "../../routes/$types";
     import Upvote from "./upvote.svelte";
 
-    let { item, onUpdate }: { item: Item; onUpdate: (item: Item) => void } =
+    let {
+        item,
+        onUpdate,
+        data,
+    }: { item: Item; onUpdate: (item: Item) => void; data: PageData } =
         $props();
 </script>
 
@@ -13,7 +18,7 @@
             <span>
                 {item.needLevel}
             </span>
-            <Upvote {item} {onUpdate} />
+            <Upvote {item} {onUpdate} {data} />
         </div>
     </div>
 </div>

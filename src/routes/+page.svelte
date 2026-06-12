@@ -6,8 +6,8 @@
     let { data }: { data: PageData } = $props();
 </script>
 
-{#if data.authenticated}
-    <Board />
+{#if data.linearReady}
+    <Board {data} />
 {:else}
     <NotConnectedLinear />
 {/if}

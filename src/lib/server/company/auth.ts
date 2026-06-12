@@ -25,3 +25,7 @@ export const getUserFromSession = () => {
   const encryptedUser = cookies.get("user") ?? "";
   return decryptUserCookie(encryptedUser);
 };
+
+export const isUserAuthenticated = () => {
+  return getUserFromSession() !== null;
+};

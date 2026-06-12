@@ -1,11 +1,16 @@
-import { isAuthenticated } from "$lib/server/linear/client";
+import { isUserAuthenticated } from "$lib/server/company/auth";
+import { isLinearReady } from "$lib/server/linear/client";
 
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async () => {
-  const [authenticated] = await Promise.all([isAuthenticated()]);
+  const [linearReady, userAuthenticated] = await Promise.all([
+    isLinearReady(),
+    isUserAuthenticated(),
+  ]);
 
   return {
-    authenticated,
+    linearReady,
+    userAuthenticated,
   };
 };

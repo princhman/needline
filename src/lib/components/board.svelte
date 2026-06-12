@@ -7,6 +7,9 @@
     import { groupItems } from "$lib/utils/groupItems";
     import { getStatusColor } from "$lib/utils/statusColor";
     import Item from "./item.svelte";
+    import type { PageData } from "../../routes/$types";
+
+    const { data }: { data: PageData } = $props();
 
     let items = getItems();
     let boardItems = $state<ItemType[]>([]);
@@ -62,7 +65,7 @@
                     <RefreshCcw />
                 </span>
             </button>
-            <CreateNeed />
+            <CreateNeed {data} />
             <UserAuthStatus />
         </div>
     </div>
@@ -81,7 +84,7 @@
 
                 <div class="pl-4 flex flex-col gap-1">
                     {#each items as item}
-                        <Item {item} onUpdate={updateItem} />
+                        <Item {item} onUpdate={updateItem} {data} />
                     {/each}
                 </div>
             </div>

@@ -8,8 +8,14 @@
     import { deleteUpvote, upvoteNeed } from "$lib/linear/need.remote";
     import Textarea from "./ui/textarea/textarea.svelte";
     import type { RemoteFormIssue } from "@sveltejs/kit";
+    import type { PageData } from "../../routes/$types";
+    import NotAuthenticated from "./not-authenticated.svelte";
 
-    let { item, onUpdate }: { item: Item; onUpdate: (item: Item) => void } =
+    let {
+        item,
+        onUpdate,
+        data,
+    }: { item: Item; onUpdate: (item: Item) => void; data: PageData } =
         $props();
     let upvoteState = $derived((item.currentCustomerNeed?.priority ?? -1) + 1); // 0 - nothing, 1 - needed, 2 - important
 
@@ -90,111 +96,121 @@
         </Button>
     </Dialog.Trigger>
     <Dialog.Content>
-        <Dialog.Header>
-            {#if item.currentCustomerNeed}
-                Updating vote for {item.title}
-            {:else}
-                Upvoting {item.title}
-            {/if}
-        </Dialog.Header>
-        <form
-            {...updateForm.enhance(async (form) => {
-                const ok = await form.submit().updates();
-                const result = updateForm.result;
-
-                if (ok && result) {
-                    open = false;
-                    const updatedItem = {
-                        ...item,
-                        needLevel: item.needLevel + result.needLevelDelta,
-                        currentCustomerNeed: {
-                            id: result.id,
-                            priority: result.priority,
-                            body: result.body,
-                        },
-                    };
-                    onUpdate(updatedItem);
-                } else {
-                    issues = form.fields.allIssues() ?? [];
-                }
-            })}
-        >
-            <div class="grid gap-4">
-                <input type="hidden" name="itemId" value={item.id} />
-                <input type="hidden" name="itemType" value={item.itemType} />
+        {#if !data.userAuthenticated}
+            <NotAuthenticated />
+        {:else}
+            <Dialog.Header>
                 {#if item.currentCustomerNeed}
+                    Updating vote for {item.title}
+                {:else}
+                    Upvoting {item.title}
+                {/if}
+            </Dialog.Header>
+            <form
+                {...updateForm.enhance(async (form) => {
+                    const ok = await form.submit().updates();
+                    const result = updateForm.result;
+
+                    if (ok && result) {
+                        open = false;
+                        const updatedItem = {
+                            ...item,
+                            needLevel: item.needLevel + result.needLevelDelta,
+                            currentCustomerNeed: {
+                                id: result.id,
+                                priority: result.priority,
+                                body: result.body,
+                            },
+                        };
+                        onUpdate(updatedItem);
+                    } else {
+                        issues = form.fields.allIssues() ?? [];
+                    }
+                })}
+            >
+                <div class="grid gap-4">
+                    <input type="hidden" name="itemId" value={item.id} />
                     <input
                         type="hidden"
-                        name="initialPriority"
-                        value={item.currentCustomerNeed.priority}
+                        name="itemType"
+                        value={item.itemType}
                     />
-                    <input
-                        type="hidden"
-                        name="customerNeedId"
-                        value={item.currentCustomerNeed.id}
-                    />
+                    {#if item.currentCustomerNeed}
+                        <input
+                            type="hidden"
+                            name="initialPriority"
+                            value={item.currentCustomerNeed.priority}
+                        />
+                        <input
+                            type="hidden"
+                            name="customerNeedId"
+                            value={item.currentCustomerNeed.id}
+                        />
+                    {/if}
+
+                    <div class="grid gap-3">
+                        <Label for="why">Why?</Label>
+                        <Textarea
+                            id="why"
+                            {...updateForm.fields.why.as(
+                                "text",
+                                getWhyFromBody(
+                                    item.currentCustomerNeed?.body ?? "",
+                                ),
+                            )}
+                            placeholder="Why is it important?"
+                            selectEndOnFocus={true}
+                        />
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <Checkbox
+                            name={isUrgentField.name}
+                            value={isUrgentField.value}
+                            checked={isUrgentField.checked}
+                            aria-invalid={isUrgentField["aria-invalid"]}
+                            id="urgency"
+                        />
+                        <Label for="urgency">Urgent</Label>
+                    </div>
+                </div>
+
+                {#if issues.length > 0}
+                    <div class="text-sm text-red-600">
+                        <Label>Issues</Label>
+                        <ul>
+                            {#each issues as issue}
+                                <li>{issue.message}</li>
+                            {/each}
+                        </ul>
+                    </div>
                 {/if}
 
-                <div class="grid gap-3">
-                    <Label for="why">Why?</Label>
-                    <Textarea
-                        id="why"
-                        {...updateForm.fields.why.as(
-                            "text",
-                            getWhyFromBody(
-                                item.currentCustomerNeed?.body ?? "",
-                            ),
-                        )}
-                        placeholder="Why is it important?"
-                        selectEndOnFocus={true}
-                    />
-                </div>
-                <div class="flex items-center gap-3">
-                    <Checkbox
-                        name={isUrgentField.name}
-                        value={isUrgentField.value}
-                        checked={isUrgentField.checked}
-                        aria-invalid={isUrgentField["aria-invalid"]}
-                        id="urgency"
-                    />
-                    <Label for="urgency">Urgent</Label>
-                </div>
-            </div>
-
-            {#if issues.length > 0}
-                <div class="text-sm text-red-600">
-                    <Label>Issues</Label>
-                    <ul>
-                        {#each issues as issue}
-                            <li>{issue.message}</li>
-                        {/each}
-                    </ul>
-                </div>
-            {/if}
-
-            <Dialog.Footer class="pt-4">
-                <!-- open in if to prevent delete button flicker -->
-                {#if open && item.currentCustomerNeed}
-                    <Button
-                        variant="destructive"
-                        size="icon"
-                        class="sm:mr-auto"
-                        onclick={deleteVote}
+                <Dialog.Footer class="pt-4">
+                    <!-- open in if to prevent delete button flicker -->
+                    {#if open && item.currentCustomerNeed}
+                        <Button
+                            variant="destructive"
+                            size="icon"
+                            class="sm:mr-auto"
+                            onclick={deleteVote}
+                        >
+                            <Trash2 />
+                        </Button>
+                    {/if}
+                    <Dialog.Close
+                        type="button"
+                        class={buttonVariants({ variant: "outline" })}
                     >
-                        <Trash2 />
-                    </Button>
-                {/if}
-                <Dialog.Close
-                    type="button"
-                    class={buttonVariants({ variant: "outline" })}
-                >
-                    Cancel
-                </Dialog.Close>
-                <Button type="submit" disabled={updateForm.pending > 0}>
-                    {@const msg = item.currentCustomerNeed ? "Updat" : "Upvot"}
-                    {#if updateForm.pending}{msg}ing...{:else}{msg}e{/if}</Button
-                >
-            </Dialog.Footer>
-        </form>
+                        Cancel
+                    </Dialog.Close>
+                    <Button type="submit" disabled={updateForm.pending > 0}>
+                        {@const msg = item.currentCustomerNeed
+                            ? "Updat"
+                            : "Upvot"}
+                        {#if updateForm.pending}{msg}ing...{:else}{msg}e{/if}</Button
+                    >
+                </Dialog.Footer>
+            </form>
+        {/if}
     </Dialog.Content>
 </Dialog.Root>

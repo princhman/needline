@@ -34,7 +34,7 @@ export const getLinearClient = async () => {
   });
 };
 
-export const isAuthenticated = async () => {
+export const isLinearReady = async () => {
   const client = await getLinearClient();
 
   if (!client) {
