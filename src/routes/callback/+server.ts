@@ -1,8 +1,11 @@
 import { redirect, error } from "@sveltejs/kit";
 import { exchangeCodeForToken } from "$lib/server/linear/auth";
-import { saveToken } from "$lib/server/db/token";
+import { saveToken } from "$lib/server/store/token-actions";
 
 import type { RequestHandler } from "./$types";
+import { createOrGetLabel } from "$lib/server/linear/labels";
+import { getTeam } from "$lib/server/linear/teams";
+import { saveSettings } from "$lib/server/store/settings-actions";
 
 export const GET: RequestHandler = async ({ url }) => {
   const code = url.searchParams.get("code");
@@ -17,7 +20,17 @@ export const GET: RequestHandler = async ({ url }) => {
     throw error(500, "Missing token data");
   }
 
-  saveToken(tokens.access_token, tokens.refresh_token, tokens.expires_in);
+  await saveToken(tokens.access_token, tokens.refresh_token, tokens.expires_in);
+
+  // automatic saving, in future should be update
+  try {
+    const labelId = await createOrGetLabel();
+    const teamId = await getTeam();
+    await saveSettings(teamId, labelId);
+  } catch (e: any) {
+    const msg = e.message;
+    throw error(500, msg);
+  }
 
   return redirect(302, "/");
 };

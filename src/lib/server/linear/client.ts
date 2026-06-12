@@ -1,5 +1,4 @@
-import { LinearClient } from "@linear/sdk";
-import { getToken, saveToken } from "$lib/server/store/actions";
+import { getToken, saveToken } from "$lib/server/store/token-actions";
 import { refreshLinearToken } from "./auth";
 import { GraphQLClient } from "graphql-request";
 
@@ -20,7 +19,7 @@ export const getLinearClient = async () => {
     ) {
       throw new Error("Failed to refresh token");
     }
-    saveToken(
+    await saveToken(
       new_token.access_token,
       new_token.refresh_token,
       new_token.expires_in,
@@ -35,7 +34,7 @@ export const getLinearClient = async () => {
   });
 };
 
-export const isAuthenticated = async () => {
+export const isLinearReady = async () => {
   const client = await getLinearClient();
 
   if (!client) {

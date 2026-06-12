@@ -20,6 +20,10 @@ type Documents = {
     "\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n        status: state {\n          type\n        }\n      }\n    }\n  }\n": typeof types.IssueCreateDocument,
     "\n  mutation CustomerNeedDelete($customerNeedDeleteId: String!) {\n    customerNeedDelete(id: $customerNeedDeleteId) {\n      success\n    }\n  }\n": typeof types.CustomerNeedDeleteDocument,
     "\n  query Customer($filter: CustomerFilter, $first: Int) {\n    customers(filter: $filter, first: $first) {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CustomerDocument,
+    "\n  query labels(\n    $issueFilter: IssueLabelFilter\n    $projectFilter: ProjectLabelFilter\n  ) {\n    issueLabels(first: 1, filter: $issueFilter) {\n      nodes {\n        name\n        id\n      }\n    }\n    projectLabels(first: 1, filter: $projectFilter) {\n      nodes {\n        name\n      }\n    }\n  }\n": typeof types.LabelsDocument,
+    "\n  mutation ProjectLabelCreate($input: ProjectLabelCreateInput!) {\n    projectLabelCreate(input: $input) {\n      success\n    }\n  }\n": typeof types.ProjectLabelCreateDocument,
+    "\n  mutation IssueLabelCreate($input: IssueLabelCreateInput!) {\n    issueLabelCreate(input: $input) {\n      success\n      issueLabel {\n        id\n      }\n    }\n  }\n": typeof types.IssueLabelCreateDocument,
+    "\n  query Teams {\n    teams(first: 1) {\n      nodes {\n        id\n      }\n    }\n  }\n": typeof types.TeamsDocument,
 };
 const documents: Documents = {
     "\n  query GetNeedlineIssues($customerId: ID) {\n    issues(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        title\n        needs {\n          nodes {\n            priority\n          }\n        }\n\n        currentCustomerNeeds: needs(\n          first: 1\n          filter: { customer: { id: { eq: $customerId } } }\n        ) {\n          nodes {\n            id\n            priority\n            body\n          }\n        }\n        status: state {\n          type\n        }\n      }\n    }\n    projects(filter: { labels: { name: { containsIgnoreCase: \"needline\" } } }) {\n      nodes {\n        id\n        title: name\n        needs {\n          nodes {\n            priority\n          }\n        }\n\n        currentCustomerNeeds: needs(\n          first: 1\n          filter: { customer: { id: { eq: $customerId } } }\n        ) {\n          nodes {\n            id\n            priority\n            body\n          }\n        }\n        status {\n          type\n        }\n      }\n    }\n  }\n": types.GetNeedlineIssuesDocument,
@@ -28,6 +32,10 @@ const documents: Documents = {
     "\n  mutation IssueCreate($input: IssueCreateInput!) {\n    issueCreate(input: $input) {\n      success\n      issue {\n        id\n        identifier\n        title\n        status: state {\n          type\n        }\n      }\n    }\n  }\n": types.IssueCreateDocument,
     "\n  mutation CustomerNeedDelete($customerNeedDeleteId: String!) {\n    customerNeedDelete(id: $customerNeedDeleteId) {\n      success\n    }\n  }\n": types.CustomerNeedDeleteDocument,
     "\n  query Customer($filter: CustomerFilter, $first: Int) {\n    customers(filter: $filter, first: $first) {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n": types.CustomerDocument,
+    "\n  query labels(\n    $issueFilter: IssueLabelFilter\n    $projectFilter: ProjectLabelFilter\n  ) {\n    issueLabels(first: 1, filter: $issueFilter) {\n      nodes {\n        name\n        id\n      }\n    }\n    projectLabels(first: 1, filter: $projectFilter) {\n      nodes {\n        name\n      }\n    }\n  }\n": types.LabelsDocument,
+    "\n  mutation ProjectLabelCreate($input: ProjectLabelCreateInput!) {\n    projectLabelCreate(input: $input) {\n      success\n    }\n  }\n": types.ProjectLabelCreateDocument,
+    "\n  mutation IssueLabelCreate($input: IssueLabelCreateInput!) {\n    issueLabelCreate(input: $input) {\n      success\n      issueLabel {\n        id\n      }\n    }\n  }\n": types.IssueLabelCreateDocument,
+    "\n  query Teams {\n    teams(first: 1) {\n      nodes {\n        id\n      }\n    }\n  }\n": types.TeamsDocument,
 };
 
 /**
@@ -68,6 +76,22 @@ export function graphql(source: "\n  mutation CustomerNeedDelete($customerNeedDe
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query Customer($filter: CustomerFilter, $first: Int) {\n    customers(filter: $filter, first: $first) {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query Customer($filter: CustomerFilter, $first: Int) {\n    customers(filter: $filter, first: $first) {\n      nodes {\n        id\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query labels(\n    $issueFilter: IssueLabelFilter\n    $projectFilter: ProjectLabelFilter\n  ) {\n    issueLabels(first: 1, filter: $issueFilter) {\n      nodes {\n        name\n        id\n      }\n    }\n    projectLabels(first: 1, filter: $projectFilter) {\n      nodes {\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query labels(\n    $issueFilter: IssueLabelFilter\n    $projectFilter: ProjectLabelFilter\n  ) {\n    issueLabels(first: 1, filter: $issueFilter) {\n      nodes {\n        name\n        id\n      }\n    }\n    projectLabels(first: 1, filter: $projectFilter) {\n      nodes {\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ProjectLabelCreate($input: ProjectLabelCreateInput!) {\n    projectLabelCreate(input: $input) {\n      success\n    }\n  }\n"): (typeof documents)["\n  mutation ProjectLabelCreate($input: ProjectLabelCreateInput!) {\n    projectLabelCreate(input: $input) {\n      success\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation IssueLabelCreate($input: IssueLabelCreateInput!) {\n    issueLabelCreate(input: $input) {\n      success\n      issueLabel {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation IssueLabelCreate($input: IssueLabelCreateInput!) {\n    issueLabelCreate(input: $input) {\n      success\n      issueLabel {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Teams {\n    teams(first: 1) {\n      nodes {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  query Teams {\n    teams(first: 1) {\n      nodes {\n        id\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

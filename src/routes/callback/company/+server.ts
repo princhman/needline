@@ -13,9 +13,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
   const user = verifyUser(encryptedUser);
 
-  if (!user) {
-    throw error(400, "Invalid user param");
-  }
+  console.log(user.name, user.email);
 
   const encryptedUserCookie = encryptUserCookie(user);
 

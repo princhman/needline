@@ -1,8 +1,8 @@
 import { env } from "$env/dynamic/public";
 
 const params = new URLSearchParams({
-  client_id: env.PUBLIC_CLIENT_ID!,
-  redirect_uri: env.PUBLIC_REDIRECT_URI,
+  client_id: env.PUBLIC_CLIENT_ID,
+  redirect_uri: env.PUBLIC_BASE_URL + "/callback",
   response_type: "code",
   scope: "read,write,customer:read,customer:write",
   state: crypto.randomUUID(),

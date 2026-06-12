@@ -535,6 +535,8 @@ export type InitiativeCollectionFilter = {
   ancestors?: InitiativeCollectionFilter | null | undefined;
   /** Compound filters, all of which need to be matched by the initiative. */
   and?: Array<InitiativeCollectionFilter> | null | undefined;
+  /** [Internal] Comparator for the initiative canceled at date. */
+  canceledAt?: NullableDateComparator | null | undefined;
   /** Comparator for the initiative completed at date. */
   completedAt?: NullableDateComparator | null | undefined;
   /** Comparator for the created at date. */
@@ -569,7 +571,7 @@ export type InitiativeCollectionFilter = {
   some?: InitiativeFilter | null | undefined;
   /** Comparator for the initiative started at date. */
   startedAt?: NullableDateComparator | null | undefined;
-  /** Comparator for the initiative status: Planned, Active, Completed */
+  /** Comparator for the initiative status: Proposed, Planned, Active, Completed, Canceled */
   status?: StringComparator | null | undefined;
   /** Comparator for the initiative target date. */
   targetDate?: NullableDateComparator | null | undefined;
@@ -587,6 +589,8 @@ export type InitiativeFilter = {
   ancestors?: InitiativeCollectionFilter | null | undefined;
   /** Compound filters, all of which need to be matched by the initiative. */
   and?: Array<InitiativeFilter> | null | undefined;
+  /** [Internal] Comparator for the initiative canceled at date. */
+  canceledAt?: NullableDateComparator | null | undefined;
   /** Comparator for the initiative completed at date. */
   completedAt?: NullableDateComparator | null | undefined;
   /** Comparator for the created at date. */
@@ -615,7 +619,7 @@ export type InitiativeFilter = {
   slugId?: StringComparator | null | undefined;
   /** Comparator for the initiative started at date. */
   startedAt?: NullableDateComparator | null | undefined;
-  /** Comparator for the initiative status: Planned, Active, Completed */
+  /** Comparator for the initiative status: Proposed, Planned, Active, Completed, Canceled */
   status?: StringComparator | null | undefined;
   /** Comparator for the initiative target date. */
   targetDate?: NullableDateComparator | null | undefined;
@@ -1125,6 +1129,26 @@ export type IssueLabelCollectionFilter = {
   updatedAt?: DateComparator | null | undefined;
 };
 
+/** Input for creating a new label. A name is required. If no team is specified, the label is created as a workspace-level label available to all teams. */
+export type IssueLabelCreateInput = {
+  /** The color of the label. */
+  color?: string | null | undefined;
+  /** The description of the label. */
+  description?: string | null | undefined;
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: string | null | undefined;
+  /** Whether the label is a group. */
+  isGroup?: boolean | null | undefined;
+  /** The name of the label. */
+  name: string;
+  /** The identifier of the parent label. */
+  parentId?: string | null | undefined;
+  /** The time at which the label was retired. Set to null to restore a retired label. */
+  retiredAt?: unknown;
+  /** The team associated with the label. If not given, the label will be associated with the entire workspace. */
+  teamId?: string | null | undefined;
+};
+
 /** Issue label filtering options. */
 export type IssueLabelFilter = {
   /** Compound filters, all of which need to be matched by the label. */
@@ -1403,6 +1427,8 @@ export type NullableInitiativeFilter = {
   ancestors?: InitiativeCollectionFilter | null | undefined;
   /** Compound filters, all of which need to be matched by the initiative. */
   and?: Array<NullableInitiativeFilter> | null | undefined;
+  /** [Internal] Comparator for the initiative canceled at date. */
+  canceledAt?: NullableDateComparator | null | undefined;
   /** Comparator for the initiative completed at date. */
   completedAt?: NullableDateComparator | null | undefined;
   /** Comparator for the created at date. */
@@ -1433,7 +1459,7 @@ export type NullableInitiativeFilter = {
   slugId?: StringComparator | null | undefined;
   /** Comparator for the initiative started at date. */
   startedAt?: NullableDateComparator | null | undefined;
-  /** Comparator for the initiative status: Planned, Active, Completed */
+  /** Comparator for the initiative status: Proposed, Planned, Active, Completed, Canceled */
   status?: StringComparator | null | undefined;
   /** Comparator for the initiative target date. */
   targetDate?: NullableDateComparator | null | undefined;
@@ -2129,6 +2155,24 @@ export type ProjectLabelCollectionFilter = {
   some?: ProjectLabelCollectionFilter | null | undefined;
   /** Comparator for the updated at date. */
   updatedAt?: DateComparator | null | undefined;
+};
+
+/** Input for creating a new project label. A name is required. The label is created as a workspace-level label available to all projects. */
+export type ProjectLabelCreateInput = {
+  /** The color of the label. */
+  color?: string | null | undefined;
+  /** The description of the label. */
+  description?: string | null | undefined;
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: string | null | undefined;
+  /** Whether the label is a group. */
+  isGroup?: boolean | null | undefined;
+  /** The name of the label. */
+  name: string;
+  /** The identifier of the parent label. */
+  parentId?: string | null | undefined;
+  /** The time at which the label was retired. Set to null to restore a retired label. */
+  retiredAt?: unknown;
 };
 
 /** Project label filtering options. */
@@ -2912,6 +2956,33 @@ export type CustomerQueryVariables = Exact<{
 
 export type CustomerQuery = { customers: { nodes: Array<{ id: string, name: string }> } };
 
+export type LabelsQueryVariables = Exact<{
+  issueFilter?: IssueLabelFilter | null | undefined;
+  projectFilter?: ProjectLabelFilter | null | undefined;
+}>;
+
+
+export type LabelsQuery = { issueLabels: { nodes: Array<{ name: string, id: string }> }, projectLabels: { nodes: Array<{ name: string }> } };
+
+export type ProjectLabelCreateMutationVariables = Exact<{
+  input: ProjectLabelCreateInput;
+}>;
+
+
+export type ProjectLabelCreateMutation = { projectLabelCreate: { success: boolean } };
+
+export type IssueLabelCreateMutationVariables = Exact<{
+  input: IssueLabelCreateInput;
+}>;
+
+
+export type IssueLabelCreateMutation = { issueLabelCreate: { success: boolean, issueLabel: { id: string } } };
+
+export type TeamsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TeamsQuery = { teams: { nodes: Array<{ id: string }> } };
+
 
 export const GetNeedlineIssuesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetNeedlineIssues"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"customerId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"issues"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"labels"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"containsIgnoreCase"},"value":{"kind":"StringValue","value":"needline","block":false}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"needs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"currentCustomerNeeds"},"name":{"kind":"Name","value":"needs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"customer"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"customerId"}}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"body"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"status"},"name":{"kind":"Name","value":"state"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"projects"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"labels"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"containsIgnoreCase"},"value":{"kind":"StringValue","value":"needline","block":false}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","alias":{"kind":"Name","value":"title"},"name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"needs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"currentCustomerNeeds"},"name":{"kind":"Name","value":"needs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"customer"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"customerId"}}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"body"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetNeedlineIssuesQuery, GetNeedlineIssuesQueryVariables>;
 export const CustomerNeedCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CustomerNeedCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CustomerNeedCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"customerNeedCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"need"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}}]}}]} as unknown as DocumentNode<CustomerNeedCreateMutation, CustomerNeedCreateMutationVariables>;
@@ -2919,3 +2990,7 @@ export const CustomerNeedUpdateDocument = {"kind":"Document","definitions":[{"ki
 export const IssueCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"IssueCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"IssueCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"issueCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"issue"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","alias":{"kind":"Name","value":"status"},"name":{"kind":"Name","value":"state"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}}]} as unknown as DocumentNode<IssueCreateMutation, IssueCreateMutationVariables>;
 export const CustomerNeedDeleteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CustomerNeedDelete"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"customerNeedDeleteId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"customerNeedDelete"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"customerNeedDeleteId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<CustomerNeedDeleteMutation, CustomerNeedDeleteMutationVariables>;
 export const CustomerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Customer"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CustomerFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"customers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CustomerQuery, CustomerQueryVariables>;
+export const LabelsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"labels"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"issueFilter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"IssueLabelFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectFilter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectLabelFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"issueLabels"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"issueFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"projectLabels"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<LabelsQuery, LabelsQueryVariables>;
+export const ProjectLabelCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ProjectLabelCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectLabelCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projectLabelCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<ProjectLabelCreateMutation, ProjectLabelCreateMutationVariables>;
+export const IssueLabelCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"IssueLabelCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"IssueLabelCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"issueLabelCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"issueLabel"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<IssueLabelCreateMutation, IssueLabelCreateMutationVariables>;
+export const TeamsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<TeamsQuery, TeamsQueryVariables>;

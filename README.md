@@ -1,7 +1,9 @@
 # Needline
 Minimal public customer portal that integrates directly into Linear (no db in between)
 
-> This project uses experimental `Remote Functions` from Svelte!
+> This project uses experimental `Remote Functions` from Svelte and uses encrypted file to store tokens. (not the most optimal solution, but the simplest I could have come up with)
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/needline?referralCode=4x8-sQ&utm_medium=integration&utm_source=template&utm_campaign=generic)
 ## Why?
 Linear is amazing with what it does, but I do not want to pay more money to get a simple upvoting system. 
 
@@ -26,6 +28,6 @@ Linear remains the source of truth:
 - request volume and urgency determine the visible need level
 
 ## More detail
-- [Auth](docs/auth.md)
-- [Upvoting](docs/upvoting.md)
+- [Setup](docs/setup.md)
+- [User auth](docs/user-auth.md)
 - [Linear auth](docs/linear-auth.md)

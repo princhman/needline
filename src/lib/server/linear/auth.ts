@@ -10,7 +10,7 @@ export const exchangeCodeForToken = async (code: string) => {
     body: new URLSearchParams({
       grant_type: "authorization_code",
       code,
-      redirect_uri: publicEnv.PUBLIC_REDIRECT_URI,
+      redirect_uri: publicEnv.PUBLIC_BASE_URL + "/callback",
       client_id: publicEnv.PUBLIC_CLIENT_ID,
       client_secret: env.CLIENT_TOKEN,
     }),

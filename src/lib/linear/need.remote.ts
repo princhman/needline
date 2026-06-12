@@ -5,6 +5,7 @@ import { getLinearClient } from "$lib/server/linear/client";
 import { env } from "$env/dynamic/private";
 import { getUserFromSession } from "$lib/server/company/auth";
 import { getCustomer } from "$lib/server/linear/customers";
+import { getSettings } from "$lib/server/store/settings-actions";
 
 const CreateNeedQuery = graphql(`
   mutation CustomerNeedCreate($input: CustomerNeedCreateInput!) {
@@ -69,15 +70,17 @@ export const createNeed = form(
     const client = await getLinearClient();
     const user = getUserFromSession();
 
-    if (!client || !user) {
+    const settings = await getSettings();
+
+    if (!client || !user || !settings) {
       return null;
     }
 
     const issue = await client.request(CreateIssueQuery, {
       input: {
-        teamId: env.TEAM_ID,
+        teamId: settings.teamId,
         title: what,
-        labelIds: [env.LABEL_ID],
+        labelIds: [settings.labelId],
       },
     });
 

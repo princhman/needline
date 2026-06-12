@@ -27,3 +27,4 @@ scripts/
 my_encryption_key.pem
 company_public.pem
 TODO.md
+data/

@@ -5,23 +5,23 @@ import type { User } from "$lib/utils/types";
 import { publicDecrypt, constants } from "node:crypto";
 
 export const verifyUser = (value: string) => {
-  try {
-    const decrypted = publicDecrypt(
-      {
-        key: env.ENCRYPTION_PUBLIC_KEY,
-        padding: constants.RSA_PKCS1_PADDING,
-      },
-      Buffer.from(value, "base64url"),
-    );
+  const decrypted = publicDecrypt(
+    {
+      key: env.JWT_ENCRYPTION_PUBLIC_KEY,
+      padding: constants.RSA_PKCS1_PADDING,
+    },
+    Buffer.from(value, "base64url"),
+  );
 
-    return JSON.parse(decrypted.toString()) as User;
-  } catch {
-    return null;
-  }
+  return JSON.parse(decrypted.toString()) as User;
 };
 
 export const getUserFromSession = () => {
   const { cookies } = getRequestEvent();
   const encryptedUser = cookies.get("user") ?? "";
   return decryptUserCookie(encryptedUser);
+};
+
+export const isUserAuthenticated = () => {
+  return getUserFromSession() !== null;
 };

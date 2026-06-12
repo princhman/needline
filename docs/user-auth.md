@@ -37,11 +37,27 @@ Anyone can view public Linear issues or projects that are exposed through the po
 
 ## What is user Identity?
 Extremely minimalistic, just enough to create informative customer requests on linear.
+
 ```ts
 //src/lib/utils/types.ts
 export type User = {
   email: string; 
   name: string;
   company: string; // Acme's customer company (if B2B), otherwise can just be some placeholder
+};
+```
+
+## How to encrypt? 
+```ts
+import { constants, privateEncrypt } from "node:crypto";
+
+const encrypt = (user: User, key: string) => {
+  return privateEncrypt(
+    {
+      key: privateKey,
+      padding: constants.RSA_PKCS1_PADDING,
+    },
+    Buffer.from(JSON.stringify(user), "utf8"),
+  );
 };
 ```
