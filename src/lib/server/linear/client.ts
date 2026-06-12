@@ -1,16 +1,16 @@
 import { LinearClient } from "@linear/sdk";
-import { getToken, saveToken } from "$lib/server/db/token";
+import { getToken, saveToken } from "$lib/server/store/actions";
 import { refreshLinearToken } from "./auth";
 import { GraphQLClient } from "graphql-request";
 
 export const getLinearClient = async () => {
-  var token = getToken();
+  var token = await getToken();
 
   if (!token) {
     return null;
   }
 
-  if (token.expiresAt.getTime() <= Date.now()) {
+  if (new Date(token.expiresAt).getTime() <= Date.now()) {
     const new_token = await refreshLinearToken(token.refreshToken);
     console.log(new_token);
     if (
@@ -25,7 +25,7 @@ export const getLinearClient = async () => {
       new_token.refresh_token,
       new_token.expires_in,
     );
-    token = getToken();
+    token = await getToken();
   }
 
   return new GraphQLClient("https://api.linear.app/graphql", {

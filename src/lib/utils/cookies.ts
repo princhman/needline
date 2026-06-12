@@ -1,6 +1,6 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import { env } from "$env/dynamic/private";
-import type { User } from "$lib/server/company/auth";
+import type { User } from "$lib/utils/types";
 
 export function encryptUserCookie(user: User) {
   const key = Buffer.from(env.COOKIE_ENCRYPTION_KEY, "base64");

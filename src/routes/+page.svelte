@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { env } from "$env/dynamic/public";
     import type { PageData } from "./$types";
     import Board from "$lib/components/board.svelte";
-    import { url } from "$lib/utils/linearAuthUrl";
+    import NotConnectedLinear from "$lib/components/not-connected-linear.svelte";
 
     let { data }: { data: PageData } = $props();
 </script>
@@ -10,6 +9,5 @@
 {#if data.authenticated}
     <Board />
 {:else}
-    <p>Not connected to Linear</p>
-    <a href={url}>Authorize</a>
+    <NotConnectedLinear />
 {/if}
