@@ -5,8 +5,8 @@
 </script>
 
 {#if result?.user == null}
-    <div class="flex flex-col items-center">
-        <span>You are not authenticated</span>
-        <Button href={result?.login_url}>Login with company</Button>
+    <div class="flex flex-col items-center gap-4">
+        <span class="text-xl">Login to leave feedback</span>
+        <Button href={result?.login_url}>Login</Button>
     </div>
 {/if}

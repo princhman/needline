@@ -2,20 +2,18 @@ import { env } from "$env/dynamic/private";
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import { schema } from "./schema";
 import * as v from "valibot";
+import { readFile, writeFile } from "node:fs/promises";
 
 const FILE_NAME = "./data/store.txt";
 
 const getData = async () => {
   try {
-    const file = Bun.file(FILE_NAME);
-    const content = await file.text();
+    const content = await readFile(FILE_NAME, "utf-8");
 
     const [ivBase64, encryptedBase64, authTagBase64] = content.split(".");
-
     if (!ivBase64 || !encryptedBase64 || !authTagBase64) return null;
 
-    const key = Buffer.from(env.STORE_FILE_ENCRYPTION, "base64");
-
+    const key = Buffer.from(env.STORE_FILE_ENCRYPTION_KEY, "base64");
     const iv = Buffer.from(ivBase64, "base64url");
     const encrypted = Buffer.from(encryptedBase64, "base64url");
     const authTag = Buffer.from(authTagBase64, "base64url");
@@ -29,7 +27,8 @@ const getData = async () => {
     ]);
 
     return v.parse(schema, JSON.parse(decrypted.toString("utf-8")));
-  } catch {
+  } catch (e) {
+    console.log("e: ", e);
     return null;
   }
 };
@@ -50,7 +49,7 @@ export const saveToken = async (
   const data = v.parse(schema, {
     token: { accessToken, refreshToken, expiresAt },
   });
-  const key = Buffer.from(env.STORE_FILE_ENCRYPTION, "base64");
+  const key = Buffer.from(env.STORE_FILE_ENCRYPTION_KEY, "base64");
   const iv = randomBytes(12);
 
   const cipher = createCipheriv("aes-256-gcm", key, iv);
@@ -62,9 +61,9 @@ export const saveToken = async (
   ]);
 
   const authTag = cipher.getAuthTag();
-  const file = Bun.file(FILE_NAME);
 
-  await file.write(
+  await writeFile(
+    FILE_NAME,
     [
       iv.toString("base64url"),
       encrypted.toString("base64url"),

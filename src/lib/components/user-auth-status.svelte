@@ -21,8 +21,7 @@
                     >You are not authenticated</DropdownMenu.Label
                 >
                 <DropdownMenu.Item
-                    ><a href={result?.login_url}>Login with company</a
-                    ></DropdownMenu.Item
+                    ><a href={result?.login_url}>Login</a></DropdownMenu.Item
                 >
             {:else}
                 <DropdownMenu.Label>

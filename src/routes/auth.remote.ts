@@ -9,9 +9,9 @@ export const getUser = query(() => {
   const user = decryptUserCookie(encryptedUser);
   if (!user) {
     const params = new URLSearchParams({
-      redirect: env.BASE_URL + "/callback/company",
+      callback_url: env.BASE_URL + "/callback/company",
     });
-    const url = "http://localhost:5174/" + params.toString();
+    const url = env.AUTH_URL + params.toString();
     return { user: null, login_url: url };
   }
   return { user };

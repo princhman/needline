@@ -2,6 +2,7 @@ import { env } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
 
 export const exchangeCodeForToken = async (code: string) => {
+  console.log(env.PUBLIC_BASE_URL + "/callback");
   const response = await fetch("https://api.linear.app/oauth/token", {
     method: "POST",
     headers: {
@@ -10,7 +11,7 @@ export const exchangeCodeForToken = async (code: string) => {
     body: new URLSearchParams({
       grant_type: "authorization_code",
       code,
-      redirect_uri: publicEnv.PUBLIC_REDIRECT_URI,
+      redirect_uri: publicEnv.PUBLIC_BASE_URL + "/callback",
       client_id: publicEnv.PUBLIC_CLIENT_ID,
       client_secret: env.CLIENT_TOKEN,
     }),
