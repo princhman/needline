@@ -2,7 +2,6 @@ import { env } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
 
 export const exchangeCodeForToken = async (code: string) => {
-  console.log(env.PUBLIC_BASE_URL + "/callback");
   const response = await fetch("https://api.linear.app/oauth/token", {
     method: "POST",
     headers: {

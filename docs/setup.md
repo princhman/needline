@@ -19,7 +19,7 @@ d. After app creation, save `Client ID` and `Client Secret`, they will go under 
 ## 2. Create encryption keys
 a. Keys for encryption of cookies and file can be generated with 
 ```bash
-openssl rand -hex 32
+openssl rand -base64 32
 ```
 (you need 2 32 bytes keys), they will go under `COKIE_ENCRYPTION_KEY` and `STORE_FILE_ENCRYPTION_KEY` as environment variables respectively.
 
@@ -39,3 +39,6 @@ You wil use private on you company website to encrypt user data, and public shou
 a. Get your auth url under `AUTH_URL` environment variable, user will be redirected there with `callback_url` set to `{base_url}/callback/company`
 
 b. When user is authenticated on your side, they need to be redirected to `callback_url` with `user` parameter set to encrypted, with earlier generated private key, stringified user json. See code sample in [here](./user-auth.md).
+
+## 4. Deploy and Connect Linear 
+a. Make sure you select correct teams
