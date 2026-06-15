@@ -10,20 +10,23 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
   if (!encryptedUser) {
     throw error(400, "User param is required");
   }
+  try {
+    const user = verifyUser(encryptedUser);
+    console.log(user.name, user.email);
 
-  const user = verifyUser(encryptedUser);
+    const encryptedUserCookie = encryptUserCookie(user);
 
-  console.log(user.name, user.email);
+    cookies.set("user", encryptedUserCookie, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: !dev,
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
 
-  const encryptedUserCookie = encryptUserCookie(user);
-
-  cookies.set("user", encryptedUserCookie, {
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-    secure: !dev,
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-  });
-
-  throw redirect(302, "/");
+    throw redirect(302, "/");
+  } catch (e) {
+    console.error(e);
+    throw error(500, "Internal server error");
+  }
 };

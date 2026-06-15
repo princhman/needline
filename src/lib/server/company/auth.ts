@@ -1,7 +1,8 @@
 import { getRequestEvent } from "$app/server";
 import { env } from "$env/dynamic/private";
 import { decryptUserCookie } from "$lib/utils/cookies";
-import type { User } from "$lib/utils/types";
+import * as v from "valibot";
+import { user } from "$lib/utils/types";
 import { publicDecrypt, constants } from "node:crypto";
 
 export const verifyUser = (value: string) => {
@@ -13,7 +14,7 @@ export const verifyUser = (value: string) => {
     Buffer.from(value, "base64url"),
   );
 
-  return JSON.parse(decrypted.toString()) as User;
+  return v.parse(user, JSON.parse(decrypted.toString()));
 };
 
 export const getUserFromSession = () => {
