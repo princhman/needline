@@ -3,7 +3,6 @@
     import { User } from "@lucide/svelte";
     import { getUser } from "../../routes/auth.remote";
     import Button from "./ui/button/button.svelte";
-    import { redirect } from "@sveltejs/kit";
     import { goto } from "$app/navigation";
 
     const userQuery = getUser();
@@ -25,7 +24,7 @@
                 {#if result?.login_url}
                     <DropdownMenu.Item
                         onclick={() => {
-                            goto(result?.login_url);
+                            window.location.href = result.login_url;
                         }}
                         >Login
                     </DropdownMenu.Item>
