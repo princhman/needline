@@ -4,6 +4,7 @@
     import { getUser } from "../../routes/auth.remote";
     import Button from "./ui/button/button.svelte";
     import { redirect } from "@sveltejs/kit";
+    import { goto } from "$app/navigation";
 
     const userQuery = getUser();
 </script>
@@ -24,7 +25,7 @@
                 {#if result?.login_url}
                     <DropdownMenu.Item
                         onclick={() => {
-                            redirect(302, result?.login_url);
+                            goto(result?.login_url);
                         }}
                         >Login
                     </DropdownMenu.Item>
@@ -35,7 +36,7 @@
                 </DropdownMenu.Label>
                 <DropdownMenu.Item
                     onclick={() => {
-                        redirect(302, "/logout");
+                        goto("/logout");
                     }}
                 >
                     Logout
