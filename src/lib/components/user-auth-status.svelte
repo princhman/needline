@@ -3,6 +3,7 @@
     import { User } from "@lucide/svelte";
     import { getUser } from "../../routes/auth.remote";
     import Button from "./ui/button/button.svelte";
+    import { redirect } from "@sveltejs/kit";
 
     const userQuery = getUser();
 </script>
@@ -20,15 +21,24 @@
                 <DropdownMenu.Label
                     >You are not authenticated</DropdownMenu.Label
                 >
-                <DropdownMenu.Item
-                    ><a href={result?.login_url}>Login</a></DropdownMenu.Item
-                >
+                {#if result?.login_url}
+                    <DropdownMenu.Item
+                        onclick={() => {
+                            redirect(302, result?.login_url);
+                        }}
+                        >Login
+                    </DropdownMenu.Item>
+                {/if}
             {:else}
                 <DropdownMenu.Label>
                     {result.user.name} ({result.user.email})
                 </DropdownMenu.Label>
-                <DropdownMenu.Item>
-                    <a href="/logout">Logout</a>
+                <DropdownMenu.Item
+                    onclick={() => {
+                        redirect(302, "/logout");
+                    }}
+                >
+                    Logout
                 </DropdownMenu.Item>
             {/if}
         </DropdownMenu.Group>
