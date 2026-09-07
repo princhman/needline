@@ -1,0 +1,14 @@
+services:
+  needline:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      DATA_DIR: /app/data
+      PORT: 3000
+    volumes:
+      - needline-data:/app/data
+    restart: unless-stopped
+volumes:
+  needline-data:

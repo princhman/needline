@@ -47,7 +47,7 @@ export const createOrGetLabel = async () => {
     throw new Error("Failed to get linear client for creating/fetching label");
   }
 
-  const labelName = env.LABEL_NAME;
+  const labelName = env.LABEL_NAME || "needline";
 
   const result = await client.request(GetLabelsQuery, {
     issueFilter: { name: { in: [labelName] } },

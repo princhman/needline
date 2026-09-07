@@ -1,0 +1,12 @@
+node_modules
+.git
+.svelte-kit
+build
+.env
+.env.*
+!.env.example
+data
+*.pem
+
+# Marketing is a separate app, never part of the portal image
+site

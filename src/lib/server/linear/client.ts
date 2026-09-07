@@ -11,7 +11,6 @@ export const getLinearClient = async () => {
 
   if (new Date(token.expiresAt).getTime() <= Date.now()) {
     const new_token = await refreshLinearToken(token.refreshToken);
-    console.log(new_token);
     if (
       !new_token.access_token ||
       !new_token.refresh_token ||

@@ -20,7 +20,7 @@ Anyone can view public Linear issues or projects that are exposed through the po
 
 
       CB ->>CB: Authenticate user
-       CB-->>NS: Redirect back to Needline with encrypted JWT identity as `user` param*
+       CB-->>NS: Redirect back to Needline with RSA identity payload as `user` param*
 
       NS->>NS: decrypt and verify identity**
 
@@ -54,10 +54,27 @@ import { constants, privateEncrypt } from "node:crypto";
 const encrypt = (user: User, key: string) => {
   return privateEncrypt(
     {
-      key: privateKey,
+      key,
       padding: constants.RSA_PKCS1_PADDING,
     },
     Buffer.from(JSON.stringify(user), "utf8"),
-  );
+  ).toString("base64url");
 };
 ```
+
+## Redirect from your bridge
+
+Authenticate the customer on your server, construct the `User` from trusted account data, and encode it with the helper above. Validate `callback_url` against your configured Needline callback before redirecting:
+
+```ts
+const callback = new URL(callbackUrl);
+if (callback.href !== "https://your-needline-domain/callback/company") {
+  throw new Error("Invalid callback");
+}
+callback.searchParams.set("user", encrypt(user, privateKey));
+// Redirect the browser to callback.toString().
+```
+
+Generate the bridge key pair with `openssl genrsa -out private.pem 2048` and `openssl rsa -in private.pem -pubout -out public.pem`. Keep the private key on your bridge server; copy only the public key into Needline’s `JWT_ENCRYPTION_PUBLIC_KEY`.
+
+This legacy protocol is not a JWT or confidential encryption: anyone with the public key can recover the identity. It has no expiration or replay protection, and RSA limits payload size (245 bytes with a 2048-bit key). See [the deployment review](deployment-review.md) for the recommended replacement.

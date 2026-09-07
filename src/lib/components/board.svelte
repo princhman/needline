@@ -50,7 +50,7 @@
 
 <div class="flex flex-col w-full gap-3 py-8">
     <div class="flex w-full justify-between">
-        <span class="text-2xl">Requests</span>
+        <h1 class="text-2xl">Requests</h1>
         <div class="flex gap-2 items-center">
             <button
                 class="refresh-button inline-flex size-8 items-center justify-center border p-0 leanding-none"

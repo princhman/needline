@@ -7,6 +7,6 @@
 <svelte:head
     ><link rel="icon" href="/logo.svg" /><title>Needline</title></svelte:head
 >
-<div class="flex mx-auto max-w-3xl">
+<div class="flex mx-auto max-w-3xl px-5 sm:px-6">
     {@render children()}
 </div>
