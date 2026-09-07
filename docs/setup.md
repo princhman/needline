@@ -28,12 +28,12 @@ Set these in `.env` (or your host’s environment settings):
 | `ORIGIN` | The same origin; required for production form/remote-function requests |
 | `PUBLIC_CLIENT_ID` | Linear OAuth client ID |
 | `CLIENT_TOKEN` | Linear OAuth client secret |
-| `LABEL_NAME` | `needline`, or your preferred public label |
+| `LABEL_NAME` | Must be `needline`; custom public labels are not currently supported |
 | `COOKIE_ENCRYPTION_KEY` | Generated base64-encoded 32-byte key |
 | `STORE_FILE_ENCRYPTION_KEY` | A different generated base64-encoded 32-byte key |
 | `DATA_DIR` | Writable persistent directory; defaults to `./data` |
 
-Restart after changing configuration. Open `/`, choose **Connect Linear**, and approve the intended workspace and teams. Needline currently selects the first available team for new requests. Label an issue or project with `LABEL_NAME` and confirm it appears publicly.
+Restart after changing configuration. Open `/`, choose **Connect Linear**, and approve the intended workspace and teams. Needline currently selects the first available team for new requests. Label an issue or project with `needline` and confirm it appears publicly. Keep `LABEL_NAME=needline`: the board query currently filters for this name independently of the setting.
 
 ## 3. Enable customer requests
 
@@ -80,7 +80,7 @@ bun run check
 bun run build
 ```
 
-- **No requests:** confirm the exact public label and that the connected application can access the relevant team.
+- **No requests:** confirm `LABEL_NAME=needline`, that the issue or project has the `needline` label, and that the connected application can access the relevant team.
 - **Connection disappears after redeploy:** check the persistent mount, `DATA_DIR`, and that the store key has not changed.
 - **Cross-site request errors:** `ORIGIN` must match the browser’s origin, including the scheme and port.
 - **OAuth redirect error:** the registered URI must exactly match `PUBLIC_BASE_URL` + `/callback`.
