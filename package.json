@@ -6,16 +6,13 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "start": "bun run build && bun build/index.js",
+    "start": "node --env-file-if-exists=.env build/index.js",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "db:generate": "drizzle-kit generate --config=src/lib/server/db/drizzle.config.ts",
-    "db:migrate": "drizzle-kit migrate  --config=src/lib/server/db/drizzle.config.ts",
-    "db:push": "drizzle-kit push     --config=src/lib/server/db/drizzle.config.ts",
-    "db:studio": "drizzle-kit studio   --config=src/lib/server/db/drizzle.config.ts",
-    "codegen": "graphql-codegen"
+    "codegen": "graphql-codegen",
+    "setup": "node scripts/setup.mjs"
   },
   "devDependencies": {
     "@fontsource-variable/inter": "^5.2.8",
@@ -48,5 +45,8 @@
     "@types/bun": "^1.3.14",
     "graphql-request": "^7.4.0",
     "valibot": "^1.4.1"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

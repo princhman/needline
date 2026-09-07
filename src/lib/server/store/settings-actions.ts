@@ -1,16 +1,19 @@
 import { env } from "$env/dynamic/private";
 import { settings } from "./schema";
 import * as v from "valibot";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
-const FILE_NAME = "./data/settings.txt";
+import { join } from "node:path";
+
+const dataDirectory = () => env.DATA_DIR || "./data";
+const fileName = () => join(dataDirectory(), "settings.txt");
 
 type Settings = v.InferOutput<typeof settings>;
 
 export const getSettings = async () => {
   try {
-    const content = await readFile(FILE_NAME, "utf-8");
+    const content = await readFile(fileName(), "utf-8");
 
     const [ivBase64, encryptedBase64, authTagBase64] = content.split(".");
     if (!ivBase64 || !encryptedBase64 || !authTagBase64) return null;
@@ -30,7 +33,9 @@ export const getSettings = async () => {
 
     return v.parse(settings, JSON.parse(decrypted.toString("utf-8")));
   } catch (e) {
-    console.log("e: ", e);
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") {
+      console.error("Unable to read encrypted settings store; check DATA_DIR and STORE_FILE_ENCRYPTION_KEY.");
+    }
     return null;
   }
 };
@@ -53,12 +58,14 @@ export const saveSettings = async (teamId: string, labelId: string) => {
 
   const authTag = cipher.getAuthTag();
 
+  await mkdir(dataDirectory(), { recursive: true, mode: 0o700 });
   await writeFile(
-    FILE_NAME,
+    fileName(),
     [
       iv.toString("base64url"),
       encrypted.toString("base64url"),
       authTag.toString("base64url"),
     ].join("."),
+    { mode: 0o600 },
   );
 };

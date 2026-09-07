@@ -2,15 +2,18 @@ import { env } from "$env/dynamic/private";
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import { token } from "./schema";
 import * as v from "valibot";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 
-const FILE_NAME = "./data/token.txt";
+import { join } from "node:path";
+
+const dataDirectory = () => env.DATA_DIR || "./data";
+const fileName = () => join(dataDirectory(), "token.txt");
 
 type Token = v.InferOutput<typeof token>;
 
 export const getToken = async () => {
   try {
-    const content = await readFile(FILE_NAME, "utf-8");
+    const content = await readFile(fileName(), "utf-8");
 
     const [ivBase64, encryptedBase64, authTagBase64] = content.split(".");
     if (!ivBase64 || !encryptedBase64 || !authTagBase64) return null;
@@ -30,7 +33,9 @@ export const getToken = async () => {
 
     return v.parse(token, JSON.parse(decrypted.toString("utf-8")));
   } catch (e) {
-    console.log("e: ", e);
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") {
+      console.error("Unable to read encrypted token store; check DATA_DIR and STORE_FILE_ENCRYPTION_KEY.");
+    }
     return null;
   }
 };
@@ -61,12 +66,14 @@ export const saveToken = async (
 
   const authTag = cipher.getAuthTag();
 
+  await mkdir(dataDirectory(), { recursive: true, mode: 0o700 });
   await writeFile(
-    FILE_NAME,
+    fileName(),
     [
       iv.toString("base64url"),
       encrypted.toString("base64url"),
       authTag.toString("base64url"),
     ].join("."),
+    { mode: 0o600 },
   );
 };
